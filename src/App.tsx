@@ -15,6 +15,7 @@ function App() {
   const [authState, setAuthState] = useState<any>({
     accessToken: "",
     requestToken: "",
+    reloadAuth: false,
   });
 
   useEffect(() => {
@@ -51,6 +52,8 @@ function App() {
       });
 
       if (!response.ok) {
+        setAuthState({ ...authState, reloadAuth: true });
+
         throw new Error(`Token request failed: ${response.statusText}`);
       }
 
@@ -101,7 +104,12 @@ function App() {
 
   return (
     <div>
-      AUTH STATUS: {authState.requestToken.text || authState.accessToken.text}
+      AUTH STATUS: {authState.requestToken?.text ?? authState.accessToken?.text}
+      {authState.reloadAuth && (
+        <button onClick={() => (window.location.href = "/")}>
+          Reload Auth
+        </button>
+      )}
     </div>
   );
 }
