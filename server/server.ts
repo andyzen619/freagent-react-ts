@@ -3,6 +3,8 @@ import cors from "cors";
 
 const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
 
+const CLIENT_SECRET = "add36b85715f4023f932adf55de4af46d1fd9716";
+
 const app = express();
 
 const port = 3000;
@@ -18,18 +20,18 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  res.send("Hello from TypeScript Express Server!");
+  res.send("Hello from Freagent Server!");
 });
 
 app.post("/get_token", async (req, res) => {
-  const { client_id, client_secret, redirect_uri, code, grant_type } = req.body;
+  const { client_id, redirect_uri, code } = req.body;
 
   const body = new URLSearchParams({
     client_id,
-    client_secret,
+    client_secret: CLIENT_SECRET,
     redirect_uri,
     code,
-    grant_type,
+    grant_type: "authorization_code",
   });
 
   const response = await fetch(ACCESS_TOKEN_URL, {

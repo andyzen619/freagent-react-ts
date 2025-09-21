@@ -5,8 +5,6 @@ import "./App.css";
 const CLIENT_ID =
   "dj0yJmk9NWFQVWJadWZ4a3dNJmQ9WVdrOWRYTlFUbk5FWmswbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PWVl";
 
-const CLIENT_SECRET = "add36b85715f4023f932adf55de4af46d1fd9716";
-
 const REQUEST_TOKEN_URL = "https://api.login.yahoo.com/oauth2/request_auth";
 
 const REDIRECT_URL = "https://2e2e1b4c5577.ngrok-free.app/oauth_callback";
@@ -20,7 +18,7 @@ function App() {
   });
 
   useEffect(() => {
-    const getRequestToken = async () => {
+    const initiateRequestToken = async () => {
       const params = new URLSearchParams({
         client_id: CLIENT_ID,
         redirect_uri: REDIRECT_URL,
@@ -40,10 +38,8 @@ function App() {
     }) => {
       const body = new URLSearchParams({
         client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
         redirect_uri: REDIRECT_URL,
         code: requestToken ?? "",
-        grant_type: "authorization_code",
       });
 
       const response = await fetch(ACCESS_TOKEN_URL, {
@@ -60,28 +56,53 @@ function App() {
 
       const { access_token: accessToken } = await response.json();
 
-      setAuthState({ ...authState, accessToken });
+      setAuthState({
+        ...authState,
+        accessToken: { accessToken, text: "Authorized!" },
+      });
+
+      sessionStorage.setItem("access_token", accessToken);
     };
 
-    console.log("Current URL:", window.location.href);
+    const getRequestTokenFromUrl = () => {
+      const urlParams = new URLSearchParams(window.location.search);
 
-    const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("code") === null) {
+        initiateRequestToken();
+      }
 
-    if (urlParams.get("code") === null) {
-      getRequestToken();
+      const requestToken = urlParams.get("code");
+
+      return { requestToken };
+    };
+
+    const existingToken = sessionStorage.getItem("access_token");
+
+    if (existingToken) {
+      setAuthState((prev: any) => ({
+        ...prev,
+        accessToken: { accessToken: existingToken, text: "Authorized!" },
+      }));
+
+      return;
     }
 
-    const requestToken = urlParams.get("code");
+    const { requestToken } = getRequestTokenFromUrl();
 
     if (requestToken) {
-      setAuthState({ ...authState, requestToken });
+      setAuthState({
+        ...authState,
+        requestToken: { requestToken, text: "Requesting access...." },
+      });
 
       getAccessToken({ requestToken });
     }
   }, []);
 
   return (
-    <div>REQUEST_TOKEN: {authState.requestToken || authState.accessToken}</div>
+    <div>
+      AUTH STATUS: {authState.requestToken.text || authState.accessToken.text}
+    </div>
   );
 }
 
