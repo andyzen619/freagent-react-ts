@@ -11,7 +11,7 @@ const REQUEST_TOKEN_URL = "https://api.login.yahoo.com/oauth2/request_auth";
 
 const REDIRECT_URL = "https://2e2e1b4c5577.ngrok-free.app/oauth_callback";
 
-const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
+const ACCESS_TOKEN_URL = "http://localhost:3000/get_token";
 
 function App() {
   const [authState, setAuthState] = useState<any>({
@@ -58,9 +58,7 @@ function App() {
         throw new Error(`Token request failed: ${response.statusText}`);
       }
 
-      const tokenResponse = await response.json();
-
-      const { access_token: accessToken } = tokenResponse;
+      const { access_token: accessToken } = await response.json();
 
       setAuthState({ ...authState, accessToken });
     };
@@ -82,7 +80,9 @@ function App() {
     }
   }, []);
 
-  return <div>REQUEST_TOKEN: {authState.requestToken}</div>;
+  return (
+    <div>REQUEST_TOKEN: {authState.requestToken || authState.accessToken}</div>
+  );
 }
 
 export default App;
