@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { ConfigYahoo } from "@/config";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -12,6 +13,19 @@ function RouteComponent() {
     reloadAuth: false,
   });
 
+  const initiateRequestToken = async () => {
+    const params = new URLSearchParams({
+      client_id: ConfigYahoo.CLIENT_ID,
+      redirect_uri: ConfigYahoo.REDIRECT_URL,
+      response_type: "code",
+      language: "en-us",
+    });
+
+    const url = ConfigYahoo.REQUEST_TOKEN_URL + "?" + params.toString();
+
+    window.location.href = url;
+  };
+
   useEffect(() => {
     const existingToken = sessionStorage.getItem("access_token");
 
@@ -22,6 +36,11 @@ function RouteComponent() {
       }));
 
       return;
+    } else {
+      setAuthState((prev: any) => ({
+        ...prev,
+        reloadAuth: true,
+      }));
     }
   }, []);
 
@@ -29,7 +48,11 @@ function RouteComponent() {
     <div>
       AUTH STATUS: {authState.requestToken?.text ?? authState.accessToken?.text}
       {authState.reloadAuth && (
-        <button onClick={() => (window.location.href = "/")}>
+        <button
+          onClick={() => {
+            initiateRequestToken();
+          }}
+        >
           Reload Auth
         </button>
       )}

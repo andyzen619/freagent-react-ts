@@ -39,10 +39,6 @@ function RouteComponent() {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body,
-      }).catch((error) => {
-        console.error(error);
-
-        return { ok: false };
       });
 
       if (!response.ok) {
