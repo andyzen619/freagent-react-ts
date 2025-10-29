@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: "https://2e2e1b4c5577.ngrok-free.app", // Or the specific domain of your frontend
+    origin: " https://65990ff7092b.ngrok-free.app", // Or the specific domain of your frontend
   }),
 );
 

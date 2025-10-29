@@ -7,7 +7,7 @@ const CLIENT_ID =
 
 const REQUEST_TOKEN_URL = "https://api.login.yahoo.com/oauth2/request_auth";
 
-const REDIRECT_URL = "https://2e2e1b4c5577.ngrok-free.app/oauth_callback";
+const REDIRECT_URL = "https://92f019e0be91.ngrok-free.app/oauth_callback";
 
 const ACCESS_TOKEN_URL = "http://localhost:3000/get_token";
 
