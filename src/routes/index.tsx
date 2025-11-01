@@ -48,13 +48,7 @@ function RouteComponent() {
     <div>
       AUTH STATUS: {authState.requestToken?.text ?? authState.accessToken?.text}
       {authState.reloadAuth && (
-        <button
-          onClick={() => {
-            initiateRequestToken();
-          }}
-        >
-          Reload Auth
-        </button>
+        <button onClick={() => initiateRequestToken()}>Reload Auth</button>
       )}
     </div>
   );

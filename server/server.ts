@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { XMLParser } from "fast-xml-parser";
+import { AuthorizationToken } from "./common/index.js";
+import { Player } from "./core/Player.js";
 
 const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
 
@@ -10,15 +11,30 @@ const app = express();
 
 const port = 3000;
 
-const xmlParser = new XMLParser();
-
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
+
+app.use((req, res, next) => {
+  const now = new Date().toISOString();
+
+  console.log(`\n---------------- ${now} - ${req.method} ${req.originalUrl}\n`);
+
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log("Request Body:", JSON.stringify(req.body, null, 2));
+  }
+
+  next();
+});
+
 app.use(
   cors({
-    origin: " https://65990ff7092b.ngrok-free.app", // Or the specific domain of your frontend
+    origin: `https://65990ff7092b.ngrok-free.app`, // Or the specific domain of your frontend
   }),
 );
 
@@ -55,58 +71,23 @@ app.post("/get_token", async (req, res) => {
 });
 
 app.get("/players", async (req, res) => {
-  const { authorization } = req.headers;
+  try {
+    console.log("asdfasdf");
 
-  if (!authorization) {
-    throw new Error("Authentication Error");
+    console.log("asdfasdf");
+
+    console.log("asdfasdf");
+
+    const { token } = AuthorizationToken.fromRequestHeaders(req);
+
+    const { players } = await Player.YahooApi.getAll({ token });
+
+    return res.status(200).send({ players });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).send({ error: "Failed to fetch players" });
   }
-
-  const [, token] = authorization.split(" ");
-
-  const response = await fetch(
-    "https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players",
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
-    },
-  );
-
-  if (!response.ok) {
-    console.error(`Yahoo Error: ${response.statusText}`);
-
-    return res
-      .status(response.status)
-      .send({ error: "Failed to fetch players" });
-  }
-
-  const xmlData = await response.text();
-
-  const parsedXmlData = xmlParser.parse(xmlData);
-
-  const yahooError = parsedXmlData["yahoo:error"];
-
-  if (yahooError) {
-    const yahooErrorDescription = yahooError["yahoo:description"];
-
-    console.error(`Yahoo Error: ${yahooErrorDescription}`);
-
-    return res.status(502).send({ error: "Failed to fetch players" });
-  }
-
-  const { fantasy_content, error } = parsedXmlData;
-
-  if (error) {
-    console.error(`Yahoo Error: ${error}`);
-
-    return res.status(502).send({ error: "Failed to fetch players" });
-  }
-
-  const data = fantasy_content;
-
-  res.status(200).send(data);
 });
 
 app.listen(port, () => {
