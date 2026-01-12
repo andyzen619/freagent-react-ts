@@ -1,4 +1,4 @@
-import { XmlDataParser } from "../common/index.js";
+import { XmlDataParser } from "../utils/index.js";
 
 export const Player = {
   YahooApi: {

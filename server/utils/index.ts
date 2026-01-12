@@ -51,3 +51,17 @@ export const XmlDataParser = {
     },
   },
 };
+
+export const Logging = {
+  logHttpRequest: (req: Request) => {
+    const now = new Date().toISOString();
+
+    console.log(`\n---------------- ${now} - ${req.method} ${req.originalUrl}`);
+
+    if (req.body && Object.keys(req.body).length > 0) {
+      console.log("Request Body:", JSON.stringify(req.body, null, 2));
+    }
+
+    console.log(`---------------- END ---------------\n`);
+  },
+};

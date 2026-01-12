@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
-import { AuthorizationToken } from "./common/index.js";
-import { Player } from "./core/Player.js";
+import { AuthorizationToken } from "./utils/index.js";
+import { Player } from "./domains/Player.js";
+import { requestLoggerMiddleware } from "./middleware/index.js";
 
 const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
 
@@ -20,23 +21,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  const now = new Date().toISOString();
-
-  console.log(`\n---------------- ${now} - ${req.method} ${req.originalUrl}\n`);
-
-  if (req.body && Object.keys(req.body).length > 0) {
-    console.log("Request Body:", JSON.stringify(req.body, null, 2));
-  }
-
-  next();
-});
-
 app.use(
   cors({
-    origin: `https://65990ff7092b.ngrok-free.app`, // Or the specific domain of your frontend
+    origin: `*`, // Or the specific domain of your frontend
   }),
 );
+
+app.use(requestLoggerMiddleware);
 
 app.get("/", (req, res) => {
   res.send("Hello from Freagent Server!");
@@ -55,13 +46,12 @@ app.post("/get_token", async (req, res) => {
 
   const response = await fetch(ACCESS_TOKEN_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
     body,
   });
 
   if (!response.ok) {
+    console.log({ response });
+
     throw new Error(`Token request failed: ${response.statusText}`);
   }
 
@@ -72,15 +62,11 @@ app.post("/get_token", async (req, res) => {
 
 app.get("/players", async (req, res) => {
   try {
-    console.log("asdfasdf");
-
-    console.log("asdfasdf");
-
-    console.log("asdfasdf");
-
     const { token } = AuthorizationToken.fromRequestHeaders(req);
 
     const { players } = await Player.YahooApi.getAll({ token });
+
+    // const {} = await Stats.YahooApi.getAll({});
 
     return res.status(200).send({ players });
   } catch (error) {
