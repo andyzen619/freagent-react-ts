@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ConfigYahoo } from "@/config";
 import { useAuthState } from "@/hooks/useAuthState";
+import type { Player } from "@/types/player";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   const { authState, setAuthState } = useAuthState();
+  const playersContainerRef = useRef<HTMLDivElement>(null);
 
   const initiateRequestToken = async () => {
     const params = new URLSearchParams({
@@ -40,19 +42,6 @@ function RouteComponent() {
       }));
     }
   }, []);
-
-  type PlayerStats = {
-    season: string;
-    points: number;
-    rebounds: number;
-    assists: number;
-  };
-
-  type Player = {
-    name: string;
-    position: string[];
-    stats: PlayerStats[];
-  };
 
   const [playersList, setPlayersList] = useState<Player[]>([
     {
@@ -97,10 +86,55 @@ function RouteComponent() {
     },
   ]);
 
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [selectedSeason, setSelectedSeason] = useState("2022-23");
+
+  const loadMore = () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    // Simulate API fetch with timeout; replace with actual fetch
+    setTimeout(() => {
+      const newPlayers: Player[] = [
+        // Duplicate or add new players here; for demo, duplicating existing
+        ...playersList
+          .slice(0, 5)
+          .map((p, i) => ({ ...p, name: `${p.name} ${i + 1}` })),
+      ];
+      setPlayersList((prev) => [...prev, ...newPlayers]);
+      setLoading(false);
+      if (playersList.length + newPlayers.length >= 50) setHasMore(false);
+    }, 1000);
+  };
+
+  const handleScroll = () => {
+    const container = playersContainerRef.current;
+    if (container) {
+      const { scrollTop, clientHeight, scrollHeight } = container;
+      if (scrollTop + clientHeight >= scrollHeight - 100) {
+        loadMore();
+      }
+    }
+  };
+
+  useEffect(() => {
+    const container = playersContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, [loading, hasMore]);
+
+  const seasons = Array.from(
+    new Set(
+      playersList.flatMap((player) => player.stats.map((stat) => stat.season)),
+    ),
+  );
+
   return (
     <div>
       <div>
-        AUTH STATUS:
+        AUTH STATUS:{" "}
         {authState.requestToken?.text || authState.accessToken?.text}
       </div>
       <div>
@@ -110,7 +144,61 @@ function RouteComponent() {
       </div>
       <div>
         <div>Players</div>
-        <div>{}</div>
+        <div>
+          <label htmlFor="season-select">Select Season:</label>
+          <select
+            id="season-select"
+            value={selectedSeason}
+            onChange={(e) => setSelectedSeason(e.target.value)}
+          >
+            {seasons.map((season) => (
+              <option key={season} value={season}>
+                {season}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div
+          ref={playersContainerRef}
+          style={{ height: "400px", overflowY: "auto" }} // Add height and scroll for demo; style with Tailwind later
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Points</th>
+                <th>Rebounds</th>
+                <th>Assists</th>
+              </tr>
+            </thead>
+            <tbody>
+              {playersList.map((player) =>
+                player.stats
+                  .filter((stat) => stat.season === selectedSeason)
+                  .map((stat) => (
+                    <tr key={`${player.name}-${stat.season}`}>
+                      <td>{player.name}</td>
+                      <td>{player.position.join(", ")}</td>
+                      <td>{stat.points}</td>
+                      <td>{stat.rebounds}</td>
+                      <td>{stat.assists}</td>
+                    </tr>
+                  )),
+              )}
+              {loading && (
+                <tr>
+                  <td colSpan={5}>Loading more players...</td>
+                </tr>
+              )}
+              {!hasMore && (
+                <tr>
+                  <td colSpan={5}>No more players to load.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
