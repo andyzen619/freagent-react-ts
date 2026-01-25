@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ConfigYahoo } from "@/config";
 import { useAuthState } from "@/hooks/useAuthState";
