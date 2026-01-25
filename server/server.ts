@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { AuthorizationToken } from "./utils/index.js";
+import { AuthorizationToken } from "./lib/utils.js";
 import { Player } from "./domains/Player.js";
 import { requestLoggerMiddleware } from "./middleware/index.js";
 

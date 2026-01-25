@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { Logging } from "../utils/index.js";
+import { Logging } from "../lib/utils.js";
 
 export function requestLoggerMiddleware(
   req: Request,

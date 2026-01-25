@@ -1,17 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ConfigYahoo } from "@/config";
+import { useAuthState } from "@/hooks/useAuthState";
 
 export const Route = createFileRoute("/oauth_callback")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [authState, setAuthState] = useState<any>({
-    accessToken: "",
-    requestToken: "",
-    reloadAuth: false,
-  });
+  const { authState, setAuthState } = useAuthState();
 
   useEffect(() => {
     const getRequestTokenFromUrl = () => {
@@ -42,17 +39,17 @@ function RouteComponent() {
       });
 
       if (!response.ok) {
-        setAuthState({ ...authState, reloadAuth: true });
+        setAuthState((prev) => ({ ...prev, reloadAuth: true }));
 
         throw new Error(`Token request failed: ${response.statusText}`);
       }
 
       const { access_token: accessToken } = await response.json();
 
-      setAuthState({
-        ...authState,
+      setAuthState((prev) => ({
+        ...prev,
         accessToken: { accessToken, text: "Authorized!" },
-      });
+      }));
 
       sessionStorage.setItem("access_token", accessToken);
     };
@@ -60,10 +57,10 @@ function RouteComponent() {
     const { requestToken } = getRequestTokenFromUrl();
 
     if (requestToken) {
-      setAuthState({
-        ...authState,
+      setAuthState((prev) => ({
+        ...prev,
         requestToken: { requestToken, text: "Requesting access...." },
-      });
+      }));
 
       getAccessToken({ requestToken });
     }
