@@ -1,5 +1,4 @@
 export type PlayerStats = {
-  season: string;
   points: number;
   rebounds: number;
   assists: number;

@@ -64,4 +64,10 @@ export const Logging = {
 
     console.log(`---------------- END ---------------\n`);
   },
+  logError: (error: unknown) => {
+    console.error(error);
+  },
+  log: (...args: unknown[]) => {
+    console.dir(args, { depth: null });
+  },
 };

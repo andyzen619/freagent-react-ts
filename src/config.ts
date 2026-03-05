@@ -5,3 +5,7 @@ export const ConfigYahoo = {
   REDIRECT_URL: "https://f53bd51a8cb2.ngrok-free.app/oauth_callback",
   ACCESS_TOKEN_URL: "http://localhost:3000/get_token",
 };
+
+export const ConfigApiSever = {
+  URL: "http://localhost:3000",
+};

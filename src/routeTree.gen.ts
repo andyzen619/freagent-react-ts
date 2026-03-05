@@ -10,17 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as Oauth_callbackRouteImport } from './routes/oauth_callback'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
 const Oauth_callbackRoute = Oauth_callbackRouteImport.update({
   id: '/oauth_callback',
   path: '/oauth_callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,31 +25,27 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/oauth_callback': typeof Oauth_callbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/oauth_callback': typeof Oauth_callbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/oauth_callback': typeof Oauth_callbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/oauth_callback'
+  fullPaths: '/' | '/oauth_callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/oauth_callback'
-  id: '__root__' | '/' | '/about' | '/oauth_callback'
+  to: '/' | '/oauth_callback'
+  id: '__root__' | '/' | '/oauth_callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   Oauth_callbackRoute: typeof Oauth_callbackRoute
 }
 
@@ -66,13 +56,6 @@ declare module '@tanstack/react-router' {
       path: '/oauth_callback'
       fullPath: '/oauth_callback'
       preLoaderRoute: typeof Oauth_callbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,7 +70,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   Oauth_callbackRoute: Oauth_callbackRoute,
 }
 export const routeTree = rootRouteImport
