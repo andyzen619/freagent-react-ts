@@ -18,18 +18,10 @@ function RouteComponent() {
   }, []);
 
   return (
-    <div>
-      <div>
-        AUTH STATUS:{" "}
-        {authState.requestToken?.text || authState.accessToken?.text}
-      </div>
-      <div>
-        {authState.reloadAuth && (
-          <button onClick={() => initiateRequestToken()}>Reload Auth</button>
-        )}
-      </div>
-
-      <button
+    <div className="flex">
+      {authState.reloadAuth ? (
+        <button onClick={() => initiateRequestToken()}>Reload Auth</button>
+      ) : <button
         onClick={async () => {
           const { data } = await syncToServerDatabase({ authState });
 
@@ -38,6 +30,8 @@ function RouteComponent() {
       >
         Synchronize
       </button>
+      }
+
     </div>
   );
 }

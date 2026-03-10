@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ConfigYahoo } from "@/config";
 import { useAuthState } from "@/hooks/useAuthState";
 import { useEffect } from "react";
@@ -16,24 +16,47 @@ function RouteComponent() {
   useEffect(() => {
     const { requestToken } = getRequestTokenFromUrl();
 
-    if (requestToken) {
+    setAuthState((prev) => ({
+      ...prev,
+      requestToken: { requestToken, text: "Requesting access...." },
+    }));
+    
+    const accessTokenInSessionStorage = sessionStorage.getItem("access_token"); 
+
+
+    if(!accessTokenInSessionStorage){
+      getAccessToken({ requestToken, setAuthState }).then(({ accessToken }) => {
+    
+        setAuthState((prev) => ({
+          ...prev,
+          accessToken: { accessToken, text: "Authorized!" },
+        }));
+
+        sessionStorage.setItem("access_token", accessToken);
+
+      });
+    }else{
       setAuthState((prev) => ({
         ...prev,
-        requestToken: { requestToken, text: "Requesting access...." },
+        accessToken: { accessToken: accessTokenInSessionStorage, text: "Authorized!" },
       }));
 
-      getAccessToken({ requestToken, setAuthState });
     }
+    
   }, []);
 
   return (
-    <div>
-      AUTH STATUS: {authState.requestToken?.text ?? authState.accessToken?.text}
-      {authState.reloadAuth && (
-        <button onClick={() => (window.location.href = "/")}>
-          Reload Auth
+    <div className="flex gap-4"> 
+      <div>
+        AUTH STATUS: {authState.accessToken?.text ? authState.accessToken?.text : authState.requestToken?.text }
+      </div>
+      <Link
+        to="/"
+      >
+        <button>
+          Home
         </button>
-      )}
+      </Link>
     </div>
   );
 }
@@ -69,15 +92,11 @@ async function getAccessToken({
 
   if (!response.ok) {
     setAuthState((prev) => ({ ...prev, reloadAuth: true }));
+
     throw new Error(`Token request failed: ${response.statusText}`);
   }
 
   const { access_token: accessToken } = await response.json();
 
-  setAuthState((prev) => ({
-    ...prev,
-    accessToken: { accessToken, text: "Authorized!" },
-  }));
-
-  sessionStorage.setItem("access_token", accessToken);
+  return { accessToken }
 }
