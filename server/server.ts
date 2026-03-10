@@ -79,7 +79,7 @@ app.get("/players", async (req, res) => {
 
 app.post("/players/sync", async (req, res) => {
   try {
-    const { token } = AuthorizationToken.fromRequestHeaders(req);
+    const { token } = AuthorizationToken.fromRequestHeaders(req);     
 
     const { players } = await Player.YahooApi.getAll({ token });
 

@@ -4,6 +4,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
+import { ConfigUI } from './src/config.ts'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -21,6 +23,6 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: ["f53bd51a8cb2.ngrok-free.app"],
+    allowedHosts: [`${ConfigUI.URL_PREFIX}.ngrok-free.app`],
   },
 });

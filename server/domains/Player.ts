@@ -23,6 +23,9 @@ export const Player = {
       throw new YahooApiError(response.status, response.statusText, errorBody);
     },
     getAll: async ({ token }: { token: string }) => {
+      
+      console.log({token});
+
       const response = await fetch(
         "https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players",
         {
