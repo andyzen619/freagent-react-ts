@@ -15,23 +15,24 @@ function RouteComponent() {
 
   useEffect(() => {
     checkExistingToken({ setAuthState });
-  }, []);
+  }, [setAuthState]);
 
   return (
     <div className="flex">
       {authState.reloadAuth ? (
         <button onClick={() => initiateRequestToken()}>Reload Auth</button>
-      ) : <button
-        onClick={async () => {
-          const { data } = await syncToServerDatabase({ authState });
+      ) : (
+        <button
+          className="border"
+          onClick={async () => {
+            const { data } = await syncToServerDatabase({ authState });
 
-          console.log("Data synced to server database", data);
-        }}
-      >
-        Synchronize
-      </button>
-      }
-
+            console.log("Data synced to server database", data);
+          }}
+        >
+          Synchronize
+        </button>
+      )}
     </div>
   );
 }

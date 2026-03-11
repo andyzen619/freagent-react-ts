@@ -20,42 +20,39 @@ function RouteComponent() {
       ...prev,
       requestToken: { requestToken, text: "Requesting access...." },
     }));
-    
-    const accessTokenInSessionStorage = sessionStorage.getItem("access_token"); 
 
+    const accessTokenInSessionStorage = sessionStorage.getItem("access_token");
 
-    if(!accessTokenInSessionStorage){
+    if (!accessTokenInSessionStorage) {
       getAccessToken({ requestToken, setAuthState }).then(({ accessToken }) => {
-    
         setAuthState((prev) => ({
           ...prev,
           accessToken: { accessToken, text: "Authorized!" },
         }));
 
         sessionStorage.setItem("access_token", accessToken);
-
       });
-    }else{
+    } else {
       setAuthState((prev) => ({
         ...prev,
-        accessToken: { accessToken: accessTokenInSessionStorage, text: "Authorized!" },
+        accessToken: {
+          accessToken: accessTokenInSessionStorage,
+          text: "Authorized!",
+        },
       }));
-
     }
-    
-  }, []);
+  }, [setAuthState]);
 
   return (
-    <div className="flex gap-4"> 
-      <div>
-        AUTH STATUS: {authState.accessToken?.text ? authState.accessToken?.text : authState.requestToken?.text }
+    <div className="flex gap-4">
+      <div className="">
+        {authState.accessToken?.text
+          ? authState.accessToken?.text
+          : authState.requestToken?.text}
       </div>
-      <Link
-        to="/"
-      >
-        <button>
-          Home
-        </button>
+
+      <Link className="border" to="/">
+        Home
       </Link>
     </div>
   );
@@ -98,5 +95,5 @@ async function getAccessToken({
 
   const { access_token: accessToken } = await response.json();
 
-  return { accessToken }
+  return { accessToken };
 }

@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
-import { ConfigUI } from './src/config.ts'
+import { ConfigUI } from './ui/config.ts'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,13 +12,14 @@ export default defineConfig({
     tanstackRouter({
       target: "react",
       autoCodeSplitting: true,
+      routesDirectory: "./ui/routes"
     }),
     react(),
     tailwindcss(),
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "./ui"),
     },
   },
   server: {
