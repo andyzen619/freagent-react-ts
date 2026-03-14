@@ -7,7 +7,7 @@ import { YahooApiError } from "./lib/yahoo/errors.js";
 
 const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
 
-const CLIENT_SECRET = "add36b85715f4023f932adf55de4af46d1fd9716";
+const CLIENT_SECRET = "cd16154e9bc51acfd107e51957b4012723d764d3";
 
 const app = express();
 
@@ -79,7 +79,7 @@ app.get("/players", async (req, res) => {
 
 app.post("/players/sync", async (req, res) => {
   try {
-    const { token } = AuthorizationToken.fromRequestHeaders(req);     
+    const { token } = AuthorizationToken.fromRequestHeaders(req);
 
     const { players } = await Player.YahooApi.getAll({ token });
 

@@ -1,5 +1,9 @@
 import { XmlDataParser } from "../lib/utils.js";
 
+interface YahooApiPlayer {
+  firstName: string;
+}
+
 export const Player = {
   YahooApi: {
     getAll: async ({ token }: { token: string }) => {
@@ -15,8 +19,6 @@ export const Player = {
       );
 
       const data = await response.json();
-
-      console.log({ data });
 
       return { players: [] };
     },
