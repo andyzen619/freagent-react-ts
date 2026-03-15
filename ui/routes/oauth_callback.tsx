@@ -21,26 +21,14 @@ function RouteComponent() {
       requestToken: { requestToken, text: "Requesting access...." },
     }));
 
-    const accessTokenInSessionStorage = sessionStorage.getItem("access_token");
-
-    if (!accessTokenInSessionStorage) {
-      getAccessToken({ requestToken, setAuthState }).then(({ accessToken }) => {
-        setAuthState((prev) => ({
-          ...prev,
-          accessToken: { accessToken, text: "Authorized!" },
-        }));
-
-        sessionStorage.setItem("access_token", accessToken);
-      });
-    } else {
+    getAccessToken({ requestToken, setAuthState }).then(({ accessToken }) => {
       setAuthState((prev) => ({
         ...prev,
-        accessToken: {
-          accessToken: accessTokenInSessionStorage,
-          text: "Authorized!",
-        },
+        accessToken: { accessToken, text: "Authorized!" },
       }));
-    }
+
+      sessionStorage.setItem("access_token", accessToken);
+    });
   }, [setAuthState]);
 
   return (
