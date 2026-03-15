@@ -1,9 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { AuthorizationToken, Logging } from "./lib/utils.js";
-import { Player } from "./domains/Player.js";
+import { YahooApi } from "./lib/yahoo/index.js";
 import { requestLoggerMiddleware } from "./middleware/index.js";
-import { YahooApiError } from "./lib/yahoo/errors.js";
 
 const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
 
@@ -61,33 +60,13 @@ app.post("/get_token", async (req, res) => {
   res.status(200).send({ access_token });
 });
 
-app.get("/players", async (req, res) => {
-  try {
-    const { token } = AuthorizationToken.fromRequestHeaders(req);
-
-    const { players } = await Player.YahooApi.getAll({ token });
-
-    // const {} = await Stats.YahooApi.getAll({});
-
-    return res.status(200).send({ players });
-  } catch (error) {
-    console.error(error);
-
-    return res.status(500).send({ error: "Failed to fetch players" });
-  }
-});
-
 app.post("/players/sync", async (req, res) => {
   try {
     const { token } = AuthorizationToken.fromRequestHeaders(req);
 
-    const { players } = await Player.YahooApi.getAll({ token });
+    const { count } = await YahooApi.getAll({ token });
 
-    Logging.log({
-      players,
-    });
-
-    return res.status(200).send({ playersTotal: players.length });
+    return res.status(200).send({ playersTotal: count });
   } catch (error) {
     Logging.logError(error);
 

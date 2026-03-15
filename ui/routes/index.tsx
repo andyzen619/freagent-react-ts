@@ -20,14 +20,22 @@ function RouteComponent() {
   return (
     <div className="flex">
       {authState.reloadAuth ? (
-        <button onClick={() => initiateRequestToken()}>Reload Auth</button>
+        <button className="border" onClick={() => initiateRequestToken()}>
+          Reload Auth
+        </button>
       ) : (
         <button
           className="border"
           onClick={async () => {
-            const { data } = await syncToServerDatabase({ authState });
+            const { reloadauth, state } = await syncToServerDatabase({
+              authState,
+            });
 
-            console.log("Data synced to server database", data);
+            if (reloadauth) {
+              setAuthState((prev) => ({ ...prev, reloadAuth: true }));
+            } else {
+              console.log(state);
+            }
           }}
         >
           Synchronize
@@ -86,7 +94,11 @@ function checkExistingToken({
   }
 }
 
-async function syncToServerDatabase({ authState }: { authState: AuthState }) {
+async function syncToServerDatabase({
+  authState,
+}: {
+  authState: AuthState;
+}): Promise<{ state?: string; reloadauth?: boolean }> {
   const response = await fetch(`${ConfigApiSever.URL}/players/sync`, {
     method: "POST",
     headers: {
@@ -94,11 +106,11 @@ async function syncToServerDatabase({ authState }: { authState: AuthState }) {
     },
   });
 
-  if (!response.ok) {
-    return { data: null };
+  if (response.status === 401) {
+    return {
+      reloadauth: true,
+    };
   }
 
-  const data = await response.json();
-
-  return { data };
+  return { state: "Sync started." };
 }

@@ -63,6 +63,10 @@ function getRequestTokenFromUrl() {
 
   const requestToken = urlParams.get("code");
 
+  if (!requestToken) {
+    return { requestToken: "" };
+  }
+
   return { requestToken };
 }
 
