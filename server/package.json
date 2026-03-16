@@ -7,12 +7,14 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "fast-xml-parser": "^5.3.0"
+    "fast-xml-parser": "^5.3.0",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
+    "@types/pg": "^8.18.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },

@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import { Client } from "pg";
+
 import { AuthorizationToken, Logging } from "./lib/utils.js";
 import { YahooApi } from "./lib/yahoo/index.js";
 import { requestLoggerMiddleware } from "./middleware/index.js";
@@ -7,6 +9,16 @@ import { requestLoggerMiddleware } from "./middleware/index.js";
 const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
 
 const CLIENT_SECRET = "cd16154e9bc51acfd107e51957b4012723d764d3";
+
+const pgClient = new Client({
+  host: "localhost",
+  port: 5433,
+  user: "freagent",
+  password: "durant",
+  database: "freagent_db",
+});
+
+pgClient.connect();
 
 const app = express();
 
