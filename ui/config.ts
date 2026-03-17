@@ -1,5 +1,5 @@
 export const ConfigUI = {
-  URL_PREFIX: "30aa-70-53-83-74",
+  URL_PREFIX: "9c04-70-53-83-74",
 };
 
 export const ConfigYahoo = {
