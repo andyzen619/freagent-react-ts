@@ -1,4 +1,4 @@
-import type { PlayerClass } from "./types.ts";
+import type { Types } from "./types.ts";
 
 export const YahooApi = {
   getAll: async ({
@@ -6,7 +6,7 @@ export const YahooApi = {
   }: {
     token: string;
   }): Promise<{
-    players: PlayerClass[];
+    players: Types["player"];
     count: Number;
   }> => {
     const response = await fetch(
@@ -29,9 +29,9 @@ export const YahooApi = {
     const { count, ...objectWithArrayIndexAsKeys } =
       data.fantasy_content.league[1].players;
 
-    const playersList: PlayerClass[] = toArray(objectWithArrayIndexAsKeys);
+    const playersList = toArray(objectWithArrayIndexAsKeys);
 
-    return { players: playersList, count };
+    return { players: objectWithArrayIndexAsKeys, count };
   },
 };
 

@@ -5,6 +5,7 @@ import { AuthorizationToken, Logging } from "./lib/utils.js";
 import { YahooApi } from "./lib/yahoo/index.js";
 import { requestLoggerMiddleware } from "./middleware/index.js";
 import { db } from "./database.js";
+import { dataSynchronization } from "../server/business/dataSynchronization/index.js";
 
 const ACCESS_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token";
 
@@ -68,7 +69,9 @@ app.post("/players/sync", async (req, res) => {
   try {
     const { token } = AuthorizationToken.fromRequestHeaders(req);
 
-    const { count } = await YahooApi.getAll({ token });
+    const { count, players } = await YahooApi.getAll({ token });
+
+    dataSynchronization.start({ pgClient, players });
 
     return res.status(200).send({ playersTotal: count });
   } catch (error) {
