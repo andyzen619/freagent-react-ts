@@ -21,7 +21,14 @@ export const player = {
     );
 
     const values = players.map((player) => {
-      const { player_id, player_key, name } = player;
+      const {
+        player_id,
+        player_key,
+        name,
+        eligible_positions,
+        primary_position,
+        status,
+      } = player;
 
       return {
         player_id,
@@ -29,6 +36,9 @@ export const player = {
         name_first: name?.first,
         name_last: name?.last,
         name_full: name?.full,
+        eligible_positions,
+        primary_position,
+        status,
       };
     });
 

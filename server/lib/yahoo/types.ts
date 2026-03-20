@@ -5,6 +5,7 @@ export interface Types {
 export interface PlayerClass {
   player_key?: string;
   player_id?: string;
+  status: string;
   name?: Name;
   url?: string;
   editorial_player_key?: string;
