@@ -33,6 +33,49 @@ export const YahooApi = {
 
     return { players, count: Number(count) };
   },
+  getStats: async ({
+    token,
+  }: {
+    token: string;
+  }): Promise<{
+    players: {
+      player_key?: string | undefined;
+      player_stats?: PlayerClass["player_stats"] | undefined;
+      player_advanced_stats?: PlayerClass["player_advanced_stats"] | undefined;
+    }[];
+    count: number;
+  }> => {
+    const response = await fetch(
+      "https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players;out=stats?format=json",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (response.status === 401) {
+      throw new Error("Unauthorized 401: Invalid or expired token");
+    }
+
+    const data = await response.json();
+
+    const { count, ...objectWithArrayIndexAsKeys } =
+      data.fantasy_content.league[1].players;
+
+    const players = toArray(objectWithArrayIndexAsKeys);
+
+    return {
+      players: players.map((player) => ({
+        player_key: player.player_key,
+        player_stats: player.player_stats,
+        player_advanced_stats: player.player_advanced_stats,
+      })),
+      count: Number(count),
+    };
+  },
 };
 
 /**

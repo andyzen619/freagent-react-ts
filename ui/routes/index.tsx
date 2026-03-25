@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ConfigApiSever, ConfigYahoo } from "@/config";
+import { ConfigApiSever } from "@/config";
 import { useAuthState } from "@/hooks/useAuthState";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check } from "lucide-react";
+import { initiateRequestToken } from "@/lib/auth";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { AuthState } from "../hooks/useAuthState";
@@ -85,33 +86,6 @@ function RouteComponent() {
       </div>
     </div>
   );
-}
-
-/**
- * Redirects the current browser to Yahoo’s request‑token endpoint.
- *
- * The function is synchronous – it just builds the URL and assigns it to
- * `location.href`.  It defaults the `Window` parameter to the global `window`
- * so callers don’t have to pass anything, and it uses the URL/URLSearchParams
- * APIs for clarity.  The `async` was removed since there’s nothing to await.
- *
- * @param win – optional window object (useful for testing); defaults to the
- *              global `window` when available.
- */
-async function initiateRequestToken(
-  win: Window = typeof window !== "undefined" ? window : ({} as Window),
-) {
-  const params = new URLSearchParams({
-    client_id: ConfigYahoo.CLIENT_ID,
-    redirect_uri: ConfigYahoo.REDIRECT_URL,
-    response_type: "code",
-    language: "en-us",
-  });
-
-  const url = new URL(ConfigYahoo.REQUEST_TOKEN_URL);
-  url.search = params.toString();
-
-  win.location.href = url.toString();
 }
 
 function checkExistingToken({

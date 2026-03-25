@@ -25,13 +25,33 @@ export interface PlayerClass {
   eligible_positions_to_add?: EligiblePosition[];
   has_player_notes?: number;
   player_notes_last_timestamp?: number;
+  player_stats?: PlayerStats;
+  player_advanced_stats?: PlayerStats;
+}
+
+export interface PlayerStats {
+  0?: Coverage;
+  stats: StatWrapper[];
+}
+
+export interface Coverage {
+  coverage_type: string;
+  season?: string;
+  date?: string;
+}
+
+export interface StatWrapper {
+  stat: Stat;
+}
+
+export interface Stat {
+  stat_id: string;
+  value: string;
 }
 
 export interface EligiblePosition {
   position: string;
 }
-
-
 
 export interface Headshot {
   url: string;
