@@ -1,5 +1,4 @@
 import type { Request } from "express";
-import { XMLParser } from "fast-xml-parser";
 
 /**
  * Utility for extracting the authorization token from HTTP request headers.
@@ -29,26 +28,6 @@ export const AuthorizationToken = {
     }
 
     return { token };
-  },
-};
-
-const xmlParser = new XMLParser();
-
-export const XmlDataParser = {
-  YahooApi: {
-    parse: (xmlData: string) => {
-      const parsedXmlData = xmlParser.parse(xmlData);
-
-      const yahooApiError = parsedXmlData["yahoo:error"];
-
-      if (yahooApiError) {
-        const yahooApiErrorDescription = yahooApiError["yahoo:description"];
-
-        throw new Error(yahooApiErrorDescription);
-      }
-
-      return { data: parsedXmlData };
-    },
   },
 };
 

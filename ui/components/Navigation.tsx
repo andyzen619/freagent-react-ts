@@ -1,14 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { NavigationBadge } from "@/components/NavigationBadge";
 
 export function Navigation() {
   return (
-    <nav className="flex items-center gap-2 border-b p-2">
-      <Button variant="ghost" asChild>
+    <nav className="flex items-center gap-2 border-b p-4 h-16">
+      <NavigationBadge asChild>
         <Link to="/" activeProps={{ className: "font-bold bg-accent" }}>
           Home
         </Link>
-      </Button>
+      </NavigationBadge>
     </nav>
   );
 }

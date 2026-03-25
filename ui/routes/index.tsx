@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ConfigApiSever, ConfigYahoo } from "@/config";
 import { useAuthState } from "@/hooks/useAuthState";
 import { Button } from "@/components/ui/button";
+import { Loader2, Check } from "lucide-react";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { AuthState } from "../hooks/useAuthState";
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   const { authState, setAuthState } = useAuthState();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncSuccess, setSyncSuccess] = useState(false);
 
   useEffect(() => {
     checkExistingToken({ setAuthState });
@@ -28,19 +31,42 @@ function RouteComponent() {
         ) : (
           <Button
             variant="outline"
+            disabled={isSyncing}
             onClick={async () => {
-              const { reloadauth, state } = await syncToServerDatabase({
-                authState,
-              });
+              setIsSyncing(true);
+              setSyncSuccess(false);
+              try {
+                const { reloadauth, state } = await syncToServerDatabase({
+                  authState,
+                });
 
-              if (reloadauth) {
-                setAuthState((prev) => ({ ...prev, reloadAuth: true }));
-              } else {
-                console.log(state);
+                if (reloadauth) {
+                  setAuthState((prev) => ({ ...prev, reloadAuth: true }));
+                } else {
+                  console.log(state);
+                  setSyncSuccess(true);
+                  setTimeout(() => setSyncSuccess(false), 3000);
+                }
+              } catch (error) {
+                console.error("Sync failed", error);
+              } finally {
+                setIsSyncing(false);
               }
             }}
           >
-            Synchronize
+            {isSyncing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Syncing...
+              </>
+            ) : syncSuccess ? (
+              <>
+                <Check className="mr-2 h-4 w-4 text-green-500" />
+                Synced!
+              </>
+            ) : (
+              "Synchronize"
+            )}
           </Button>
         )}
         {Array.from({ length: 20 }).map((_, i) => (
