@@ -36,7 +36,7 @@ export const player = {
         name_first: name?.first,
         name_last: name?.last,
         name_full: name?.full,
-        eligible_positions,
+        eligible_positions: eligible_positions?.map((p) => p.position),
         primary_position,
         status,
       };
