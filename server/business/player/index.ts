@@ -20,7 +20,7 @@ export const player = {
       "utf8",
     );
 
-    const values = players.map((player) => {
+    const values = players.map((player, idx) => {
       const {
         player_id,
         player_key,
@@ -30,7 +30,7 @@ export const player = {
         status,
       } = player;
 
-      return {
+      const toInsert = {
         player_id,
         player_key,
         name_first: name?.first,
@@ -40,6 +40,8 @@ export const player = {
         primary_position,
         status,
       };
+
+      return toInsert;
     });
 
     const jsonValues = JSON.stringify(values);

@@ -31,6 +31,8 @@ export interface EligiblePosition {
   position: string;
 }
 
+
+
 export interface Headshot {
   url: string;
   size: string;

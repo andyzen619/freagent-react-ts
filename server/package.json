@@ -21,6 +21,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "node --watch --watch-path=. --loader ts-node/esm server.ts"
+    "dev": "node --watch --watch-path=. --loader ts-node/esm server.ts",
+    "migrate": "node --loader ts-node/esm database/migrate.ts"
   }
 }
