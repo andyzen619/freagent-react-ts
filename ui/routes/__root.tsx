@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { Navigation } from "@/components/Navigation";
 
@@ -8,9 +7,11 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <React.Fragment>
+    <div className="flex flex-col min-h-screen">
       <Navigation />
-      <Outlet />
-    </React.Fragment>
+      <main className="flex-1 flex flex-col">
+        <Outlet />
+      </main>
+    </div>
   );
 }

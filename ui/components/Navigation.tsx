@@ -9,11 +9,6 @@ export function Navigation() {
           Home
         </Link>
       </Button>
-      <Button variant="ghost" asChild>
-        <Link to="/oauth_callback" activeProps={{ className: "font-bold bg-accent" }}>
-          OAuth Callback
-        </Link>
-      </Button>
     </nav>
   );
 }

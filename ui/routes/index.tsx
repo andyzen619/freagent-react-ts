@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ConfigApiSever, ConfigYahoo } from "@/config";
 import { useAuthState } from "@/hooks/useAuthState";
+import { Button } from "@/components/ui/button";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { AuthState } from "../hooks/useAuthState";
@@ -18,29 +19,44 @@ function RouteComponent() {
   }, [setAuthState]);
 
   return (
-    <div className="flex">
-      {authState.reloadAuth ? (
-        <button className="border" onClick={() => initiateRequestToken()}>
-          Reload Auth
-        </button>
-      ) : (
-        <button
-          className="border"
-          onClick={async () => {
-            const { reloadauth, state } = await syncToServerDatabase({
-              authState,
-            });
+    <div className="flex flex-col gap-8 p-4">
+      <div className="grid grid-rows-2 grid-flow-col gap-4 overflow-x-auto pb-4 auto-cols-[minmax(150px,auto)]">
+        {authState.reloadAuth ? (
+          <Button variant="outline" onClick={() => initiateRequestToken()}>
+            Reload Auth
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            onClick={async () => {
+              const { reloadauth, state } = await syncToServerDatabase({
+                authState,
+              });
 
-            if (reloadauth) {
-              setAuthState((prev) => ({ ...prev, reloadAuth: true }));
-            } else {
-              console.log(state);
-            }
-          }}
-        >
-          Synchronize
-        </button>
-      )}
+              if (reloadauth) {
+                setAuthState((prev) => ({ ...prev, reloadAuth: true }));
+              } else {
+                console.log(state);
+              }
+            }}
+          >
+            Synchronize
+          </Button>
+        )}
+        {Array.from({ length: 20 }).map((_, i) => (
+          <Button
+            key={i}
+            variant="outline"
+            onClick={() => console.log(`Template ${i + 1} clicked`)}
+          >
+            Template {i + 1}
+          </Button>
+        ))}
+      </div>
+
+      <div className="flex-1 border-2 border-dashed rounded-lg flex items-center justify-center min-h-[300px] text-muted-foreground">
+        Other views content area
+      </div>
     </div>
   );
 }
