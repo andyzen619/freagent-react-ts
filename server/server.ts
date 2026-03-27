@@ -71,7 +71,11 @@ app.post("/players/sync", async (req, res) => {
 
     const { count, players } = await YahooApi.getAll({ token });
 
-    dataSynchronization.start({ pgClient, players });
+    const { players: playersWithStats } = await YahooApi.getStats({
+      token,
+    });
+
+    await dataSynchronization.start({ pgClient, players, playersWithStats });
 
     return res.status(200).send({ playersTotal: count });
   } catch (error) {

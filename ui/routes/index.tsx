@@ -24,14 +24,19 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-8 p-4">
-      <div className="grid grid-rows-2 grid-flow-col gap-4 overflow-x-auto pb-4 auto-cols-[minmax(150px,auto)]">
+      <div className="grid grid-rows-[repeat(2,80px)] grid-flow-col gap-4 overflow-x-auto pb-4 auto-cols-[200px]">
         {authState.reloadAuth ? (
-          <Button variant="outline" onClick={() => initiateRequestToken()}>
+          <Button
+            variant="outline"
+            className="w-full h-full"
+            onClick={() => initiateRequestToken()}
+          >
             Reload Auth
           </Button>
         ) : (
           <Button
             variant="outline"
+            className="w-full h-full"
             disabled={isSyncing}
             onClick={async () => {
               setIsSyncing(true);
@@ -70,15 +75,6 @@ function RouteComponent() {
             )}
           </Button>
         )}
-        {Array.from({ length: 20 }).map((_, i) => (
-          <Button
-            key={i}
-            variant="outline"
-            onClick={() => console.log(`Template ${i + 1} clicked`)}
-          >
-            Template {i + 1}
-          </Button>
-        ))}
       </div>
 
       <div className="flex-1 border-2 border-dashed rounded-lg flex items-center justify-center min-h-[300px] text-muted-foreground">
