@@ -16,7 +16,7 @@ SELECT
     (data->>'date')::text,
     (data->'stats')::jsonb
 FROM jsonb_array_elements($1::jsonb) AS data
-ON CONFLICT (player_key, stat_category, coverage_type, season, date)
+ON CONFLICT (player_key, stat_category, coverage_type, season, date, stat_id)
 DO UPDATE SET 
     stats = EXCLUDED.stats,
     updated_at = CURRENT_TIMESTAMP;
