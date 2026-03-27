@@ -1,8 +1,11 @@
-import { Client, DatabaseError as PGError } from "pg";
+import { Client } from "pg";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
+
 import type { PlayerStats, Stat } from "../../lib/yahoo/types.js";
+
+import { db } from "../../database/database.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,19 +14,6 @@ export interface PlayerWithStats {
   player_key?: string | undefined;
   player_stats?: PlayerStats | undefined;
   player_advanced_stats?: PlayerStats | undefined;
-}
-
-class DatabaseError extends Error {
-  public sql: string;
-  public table: string | undefined;
-
-  constructor(params: { message: string; sql: string; error: any }) {
-    const pgError = params.error as PGError;
-
-    super(params.message);
-    this.sql = params.sql;
-    this.table = pgError.table;
-  }
 }
 
 interface StatsRow {
@@ -92,7 +82,7 @@ export const playerStats = {
     try {
       await pgClient.query(sql, [jsonValues]);
     } catch (error) {
-      throw new DatabaseError({
+      throw new db.Errors.DatabaseError({
         message:
           error instanceof Error ? error.message : "Unknown database error",
         sql,

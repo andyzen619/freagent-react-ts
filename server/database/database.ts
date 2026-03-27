@@ -1,4 +1,17 @@
-import { Client } from "pg";
+import { Client, DatabaseError as PGError } from "pg";
+
+class DatabaseError extends Error {
+  public sql: string;
+  public table: string | undefined;
+
+  constructor(params: { message: string; sql: string; error: any }) {
+    const pgError = params.error as PGError;
+
+    super(params.message);
+    this.sql = params.sql;
+    this.table = pgError.table;
+  }
+}
 
 export const db = {
   initialize(): {
@@ -17,5 +30,8 @@ export const db = {
     return {
       pgClient,
     };
+  },
+  Errors: {
+    DatabaseError,
   },
 };
