@@ -3,6 +3,7 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
 import type { PlayerClass } from "../../lib/yahoo/types.js";
+import { db } from "../../database/database.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -46,6 +47,13 @@ export const player = {
 
     const jsonValues = JSON.stringify(values);
 
-    await pgClient.query(sql, [jsonValues]);
+    try {
+      await pgClient.query(sql, [jsonValues]);
+    } catch (error) {
+      throw new db.Errors.DatabaseError({
+        error,
+        sql,
+      });
+    }
   },
 };

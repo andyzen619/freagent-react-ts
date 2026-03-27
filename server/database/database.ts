@@ -4,10 +4,10 @@ class DatabaseError extends Error {
   public sql: string;
   public table: string | undefined;
 
-  constructor(params: { message: string; sql: string; error: any }) {
+  constructor(params: { sql: string; error: any }) {
     const pgError = params.error as PGError;
 
-    super(params.message);
+    super(pgError.message);
     this.sql = params.sql;
     this.table = pgError.table;
   }

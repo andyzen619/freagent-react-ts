@@ -83,8 +83,6 @@ export const playerStats = {
       await pgClient.query(sql, [jsonValues]);
     } catch (error) {
       throw new db.Errors.DatabaseError({
-        message:
-          error instanceof Error ? error.message : "Unknown database error",
         sql,
         error,
       });
