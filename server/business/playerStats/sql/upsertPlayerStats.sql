@@ -2,6 +2,7 @@ INSERT INTO player_stats (
     player_key, 
     stat_category, 
     coverage_type, 
+    stat_id,
     season, 
     date, 
     stats
@@ -10,6 +11,7 @@ SELECT
     (data->>'player_key')::text,
     (data->>'stat_category')::text,
     (data->>'coverage_type')::text,
+    (data->>'stat_id')::text,
     (data->>'season')::text,
     (data->>'date')::text,
     (data->'stats')::jsonb
