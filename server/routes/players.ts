@@ -3,6 +3,8 @@ import { AuthorizationToken, Logging } from "../lib/utils.js";
 import { YahooApi } from "../lib/yahoo/index.js";
 import { dataSynchronization } from "../business/dataSynchronization/index.js";
 import { db } from "../database/database.js";
+import { playerStats } from "../business/playerStats/index.js";
+import { player } from "../business/player/index.js";
 
 const router = Router();
 const { pgClient } = db.initialize();
@@ -11,25 +13,9 @@ router.get("/", async (req, res) => {
   try {
     const { token } = AuthorizationToken.fromRequestHeaders(req);
 
-    const query = `
-      SELECT 
-        player_key,
-        player_id,
-        name_full,
-        name_first,
-        name_last,
-        status,
-        primary_position,
-        eliagible_positions,
-        created_at,
-        updated_at
-      FROM players
-      ORDER BY name_full ASC
-    `;
+    const { players } = await player.getAll({ pgClient });
 
-    const result = await pgClient.query(query);
-
-    return res.status(200).send({ players: result.rows, total: result.rows.length });
+    return res.status(200).send({ players });
   } catch (error) {
     Logging.logError(error);
 

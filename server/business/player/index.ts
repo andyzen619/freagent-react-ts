@@ -2,13 +2,31 @@ import { Client } from "pg";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
-import type { PlayerClass } from "../../lib/yahoo/types.js";
+import type { PlayerClass, Name } from "../../lib/yahoo/types.js";
 import { db } from "../../database/database.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export const player = {
+  getAll: async ({
+    pgClient,
+  }: {
+    pgClient: Client;
+  }): Promise<{ players: { name: string }[] }> => {
+    const sql = await fs.readFile(
+      join(__dirname, "./sql/getAlllPlayers.sql"),
+      "utf8",
+    );
+
+    const { rows } = await pgClient.query(sql);
+
+    const players = rows.map(({ name }: PlayerClass) => ({
+      name: name?.full || "UNKNOWN",
+    }));
+
+    return { players };
+  },
   insertIntoDb: async ({
     pgClient,
     players,
