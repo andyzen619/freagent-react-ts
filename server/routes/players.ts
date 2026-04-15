@@ -11,9 +11,7 @@ const { pgClient } = db.initialize();
 
 router.get("/", async (req, res) => {
   try {
-    const { token } = AuthorizationToken.fromRequestHeaders(req);
-
-    const { players } = await player.getAll({ pgClient });
+    const { players } = await player.getAllWithStats({ pgClient });
 
     return res.status(200).send({ players });
   } catch (error) {
@@ -21,7 +19,7 @@ router.get("/", async (req, res) => {
 
     if (error instanceof Error) {
       if (error.message.includes("401")) {
-        return res.status(401).send("Unable to authenticate.");
+        return res.status(401).send({ error: "Unable to authenticate." });
       }
     }
 
@@ -33,15 +31,64 @@ router.post("/sync", async (req, res) => {
   try {
     const { token } = AuthorizationToken.fromRequestHeaders(req);
 
-    const { count, players } = await YahooApi.getAll({ token });
+    let allPlayers: any[] = [];
+    let allPlayersWithStats: any[] = [];
+    let currentIndex = 0;
+    let totalCount = 0;
 
-    const { players: playersWithStats } = await YahooApi.getStats({
-      token,
+    console.log("Starting full synchronization...");
+
+    // Fetch all players with pagination (max 6 pages)
+    for (let i = 0; i < 6; i++) {
+      console.log(`Fetching players batch starting at ${currentIndex}...`);
+      const { count, players } = await YahooApi.getAll({
+        token,
+        start: currentIndex,
+      });
+
+      totalCount += count;
+      allPlayers.push(...players);
+
+      console.log(
+        `Fetched ${players.length} players. Total accumulated: ${allPlayers.length}/${totalCount}`,
+      );
+
+      currentIndex += 25;
+    }
+
+    // Reset for stats fetching
+    currentIndex = 0;
+    for (let i = 0; i < 6; i++) {
+      console.log(`Fetching player stats batch starting at ${currentIndex}...`);
+      const { players: statsBatch } = await YahooApi.getStats({
+        token,
+        start: currentIndex,
+      });
+
+      allPlayersWithStats.push(...statsBatch);
+
+      console.log(
+        `Fetched stats for ${statsBatch.length} players. Total accumulated: ${allPlayersWithStats.length}/${totalCount}`,
+      );
+
+      currentIndex += 25;
+    }
+
+    console.log(
+      `Sync complete. Total Players: ${allPlayers.length}, Total Stats: ${allPlayersWithStats.length}`,
+    );
+
+    await dataSynchronization.start({
+      pgClient,
+      players: allPlayers,
+      playersWithStats: allPlayersWithStats,
     });
 
-    await dataSynchronization.start({ pgClient, players, playersWithStats });
-
-    return res.status(200).send({ playersTotal: count });
+    return res.status(200).send({
+      message: "Sync logs generated in console",
+      playersTotal: allPlayers.length,
+      statsTotal: allPlayersWithStats.length,
+    });
   } catch (error) {
     Logging.logError(error);
 

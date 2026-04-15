@@ -2,28 +2,39 @@ import { Client } from "pg";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
-import type { PlayerClass, Name } from "../../lib/yahoo/types.js";
+import type { PlayerClass } from "../../lib/yahoo/types.js";
 import { db } from "../../database/database.js";
+import type { PlayerModel } from "../../database/models/PlayerModel.js";
+import type { PlayerStatModel } from "../../database/models/PlayerStatModel.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+interface Player {
+  name: string;
+  playerStatKey: string;
+}
+
 export const player = {
-  getAll: async ({
+  getAllWithStats: async ({
     pgClient,
   }: {
     pgClient: Client;
-  }): Promise<{ players: { name: string }[] }> => {
+  }): Promise<{ players: Player[] }> => {
     const sql = await fs.readFile(
-      join(__dirname, "./sql/getAlllPlayers.sql"),
+      join(__dirname, "./sql/getAllPlayersWithStats.sql"),
       "utf8",
     );
 
     const { rows } = await pgClient.query(sql);
 
-    const players = rows.map(({ name }: PlayerClass) => ({
-      name: name?.full || "UNKNOWN",
-    }));
+    const players = rows.map((row: PlayerModel & PlayerStatModel) => {
+      return {
+        name: row.name_full,
+        playerStatKey: row.player_key,
+        // !need to aggregate because each stat is a row and a player has multiple stats.
+      };
+    });
 
     return { players };
   },
@@ -39,7 +50,7 @@ export const player = {
       "utf8",
     );
 
-    const values = players.map((player, idx) => {
+    const values = players.map((player: PlayerClass) => {
       const {
         player_id,
         player_key,

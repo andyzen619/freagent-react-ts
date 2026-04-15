@@ -13,6 +13,8 @@ export type PlayerStats = {
 
 export type Player = {
   name: string;
-  position: string[];
+  position: string;
   stats: PlayerStats[];
+  id: string;
+  team: string;
 };

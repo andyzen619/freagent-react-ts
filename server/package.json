@@ -14,13 +14,17 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
     "@types/pg": "^8.18.0",
+    "@types/supertest": "^7.2.0",
+    "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.4"
   },
   "scripts": {
     "build": "rm -rf dist && tsc",
     "start": "node dist/server.js",
     "dev": "node --watch --watch-path=. --loader ts-node/esm server.ts",
-    "migrate": "node --loader ts-node/esm database/migrate.ts"
+    "migrate": "node --loader ts-node/esm database/migrate.ts",
+    "test": "vitest"
   }
 }

@@ -4,11 +4,12 @@ import { useAuthState } from "@/hooks/useAuthState";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check } from "lucide-react";
 import { initiateRequestToken } from "@/lib/auth";
-import { MOCK_PLAYERS, syncToServerDatabase } from "@/lib/playerUtils";
+import { syncToServerDatabase, fetchAllPlayers } from "@/lib/playerUtils";
 import { PlayerStatsTable } from "@/components/PlayerStatsTable";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { AuthState } from "@/hooks/useAuthState";
+import type { Player } from "@/types/player";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -18,10 +19,27 @@ function RouteComponent() {
   const { authState, setAuthState } = useAuthState();
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncSuccess, setSyncSuccess] = useState(false);
+  const [players, setPlayers] = useState<Player[]>([]);
 
   useEffect(() => {
     checkExistingToken({ setAuthState });
   }, [setAuthState]);
+
+  useEffect(() => {
+    if (authState.accessToken.accessToken) {
+      const { accessToken } = authState.accessToken;
+
+      fetchAllPlayers({ accessToken }).then(({ players, reloadauth }) => {
+        if (reloadauth) {
+          setAuthState((prev) => ({ ...prev, reloadAuth: true }));
+        } else {
+          if (players && players.length) {
+            setPlayers(players);
+          }
+        }
+      });
+    }
+  }, [authState, setAuthState]);
 
   return (
     <div className="flex flex-col gap-8 p-4">
@@ -79,7 +97,7 @@ function RouteComponent() {
         )}
       </div>
 
-      <PlayerStatsTable players={MOCK_PLAYERS} />
+      <PlayerStatsTable players={players} />
     </div>
   );
 }

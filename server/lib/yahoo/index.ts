@@ -3,14 +3,16 @@ import type { PlayerClass } from "./types.js";
 export const YahooApi = {
   getAll: async ({
     token,
+    start = 0,
   }: {
     token: string;
+    start?: number;
   }): Promise<{
     players: PlayerClass[];
     count: number;
   }> => {
     const response = await fetch(
-      "https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players?format=json",
+      `https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players;start=${start}?format=json`,
       {
         method: "GET",
         headers: {
@@ -35,8 +37,10 @@ export const YahooApi = {
   },
   getStats: async ({
     token,
+    start = 0,
   }: {
     token: string;
+    start?: number;
   }): Promise<{
     players: {
       player_key?: string | undefined;
@@ -46,7 +50,7 @@ export const YahooApi = {
     count: number;
   }> => {
     const response = await fetch(
-      "https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players;out=stats?format=json",
+      `https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players;out=stats;start=${start}?format=json`,
       {
         method: "GET",
         headers: {
