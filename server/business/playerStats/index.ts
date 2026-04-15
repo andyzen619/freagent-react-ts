@@ -1,11 +1,11 @@
 import { Client } from "pg";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import fs from "fs/promises";
 
 import type { PlayerStats, Stat } from "../../lib/yahoo/types.js";
 
 import { db } from "../../database/database.js";
+import { databseUtils } from "../../database/utils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,9 +34,8 @@ export const playerStats = {
     pgClient: Client;
     players: PlayerWithStats[];
   }) => {
-    const sql = await fs.readFile(
+    const sql = await databseUtils.loadSqlFile(
       join(__dirname, "./sql/upsertPlayerStats.sql"),
-      "utf8",
     );
 
     const values = players.flatMap((player) => {

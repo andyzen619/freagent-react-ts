@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { db } from "./database.js";
+import { databseUtils } from "./utils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,7 +45,7 @@ async function migrate() {
       if (!appliedMigrations.has(file)) {
         console.log(`Running migration: ${file}`);
         const filePath = path.join(migrationsDir, file);
-        const sql = fs.readFileSync(filePath, "utf-8");
+        const sql = await databseUtils.loadSqlFile(filePath);
 
         try {
           await pgClient.query("BEGIN");

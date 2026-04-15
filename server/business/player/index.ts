@@ -1,9 +1,9 @@
 import { Client } from "pg";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import fs from "fs/promises";
 import type { PlayerClass } from "../../lib/yahoo/types.js";
 import { db } from "../../database/database.js";
+import { databseUtils } from "../../database/utils.js";
 import type { PlayerModel } from "../../database/models/PlayerModel.js";
 import type { PlayerStatModel } from "../../database/models/PlayerStatModel.js";
 
@@ -21,9 +21,8 @@ export const player = {
   }: {
     pgClient: Client;
   }): Promise<{ players: Player[] }> => {
-    const sql = await fs.readFile(
+    const sql = await databseUtils.loadSqlFile(
       join(__dirname, "./sql/getAllPlayersWithStats.sql"),
-      "utf8",
     );
 
     const { rows } = await pgClient.query(sql);
@@ -45,9 +44,8 @@ export const player = {
     pgClient: Client;
     players: PlayerClass[];
   }) => {
-    const sql = await fs.readFile(
+    const sql = await databseUtils.loadSqlFile(
       join(__dirname, "./sql/playersInsertIntoPlayersTable.sql"),
-      "utf8",
     );
 
     const values = players.map((player: PlayerClass) => {
