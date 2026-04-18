@@ -27,15 +27,23 @@ export const player = {
 
     const { rows } = await pgClient.query(sql);
 
-    const players = rows.map((row: PlayerModel & PlayerStatModel) => {
-      return {
-        name: row.name_full,
-        playerStatKey: row.player_key,
-        // !need to aggregate because each stat is a row and a player has multiple stats.
-      };
+    const playersMap = new Map<string, Player & { [key: string]: any }>();
+
+    rows.forEach((row: any) => {
+      if (!playersMap.has(row.player_key)) {
+        playersMap.set(row.player_key, {
+          name: row.name_full,
+          playerStatKey: row.player_key,
+        });
+      }
+
+      const player = playersMap.get(row.player_key)!;
+      if (row.stat_id !== null && row.stat_value !== undefined) {
+        player[row.stat_id] = row.stat_value;
+      }
     });
 
-    return { players };
+    return { players: Array.from(playersMap.values()) };
   },
   insertIntoDb: async ({
     pgClient,
