@@ -11,7 +11,11 @@ const { pgClient } = db.initialize();
 
 router.get("/", async (req, res) => {
   try {
-    const { players } = await player.getAllWithStats({ pgClient });
+    const coverageType = (req.query.coverage_type as string) || "season";
+    const { players } = await player.getAllWithStats({
+      pgClient,
+      coverageType,
+    });
 
     return res.status(200).send({ players });
   } catch (error) {

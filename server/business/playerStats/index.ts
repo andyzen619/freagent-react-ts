@@ -20,8 +20,7 @@ interface StatsRow {
   player_key?: string | undefined;
   stat_category: "standard" | "advanced";
   coverage_type?: string | undefined;
-  season?: string | undefined;
-  date?: string | undefined;
+  timeframe_key?: string | undefined;
   stat_id?: string | undefined;
   stats: Stat;
 }
@@ -41,35 +40,31 @@ export const playerStats = {
     const values = players.flatMap((player) => {
       const statsToInsert: StatsRow[] = [];
 
-      if (player.player_stats) {
-        const coverage = player.player_stats[0];
-        player.player_stats.stats.forEach(({ stat }) => {
-          statsToInsert.push({
-            player_key: player.player_key,
-            stat_category: "standard",
-            coverage_type: coverage?.coverage_type,
-            season: coverage?.season,
-            date: coverage?.date,
-            stat_id: stat.stat_id,
-            stats: stat,
-          });
-        });
-      }
+      const processStats = (
+        stats: PlayerStats | undefined,
+        category: "standard" | "advanced",
+      ) => {
+        if (!stats) return;
+        const coverage = stats[0];
+        const timeframe_key =
+          coverage?.coverage_type === "date"
+            ? coverage?.date
+            : coverage?.season || "current";
 
-      if (player.player_advanced_stats) {
-        const coverage = player.player_advanced_stats[0];
-        player.player_advanced_stats.stats.forEach(({ stat }) => {
+        stats.stats.forEach(({ stat }) => {
           statsToInsert.push({
             player_key: player.player_key,
-            stat_category: "advanced",
+            stat_category: category,
             coverage_type: coverage?.coverage_type,
-            season: coverage?.season,
-            date: coverage?.date,
+            timeframe_key,
             stat_id: stat.stat_id,
             stats: stat,
           });
         });
-      }
+      };
+
+      processStats(player.player_stats, "standard");
+      processStats(player.player_advanced_stats, "advanced");
 
       return statsToInsert;
     });

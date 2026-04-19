@@ -1,1 +1,1 @@
-select name_full, players.player_key, player_stats.coverage_type, player_stats.stats -> 'value' as stat_value, player_stats.stats -> 'stat_id' as stat_id from players inner join player_stats on players.player_key = player_stats.player_key
+select name_full, players.player_key, player_stats.coverage_type, player_stats.timeframe_key, player_stats.stats -> 'value' as stat_value, player_stats.stats -> 'stat_id' as stat_id from players inner join player_stats on players.player_key = player_stats.player_key

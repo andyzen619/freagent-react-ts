@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import type { PlayerClass } from "../../lib/yahoo/types.js";
 import { db } from "../../database/database.js";
 import { databseUtils } from "../../database/utils.js";
+import { statMapper } from "../../lib/yahoo/statMapper.js";
 import type { PlayerModel } from "../../database/models/PlayerModel.js";
 import type { PlayerStatModel } from "../../database/models/PlayerStatModel.js";
 
@@ -18,18 +19,23 @@ interface Player {
 export const player = {
   getAllWithStats: async ({
     pgClient,
+    coverageType = "season",
   }: {
     pgClient: Client;
+    coverageType?: string;
   }): Promise<{ players: Player[] }> => {
     const sql = await databseUtils.loadSqlFile(
       join(__dirname, "./sql/getAllPlayersWithStats.sql"),
     );
 
-    const { rows } = await pgClient.query(sql);
+    const { rows } = await pgClient.query(
+      `${sql} WHERE player_stats.coverage_type = $1`,
+      [coverageType],
+    );
 
     const playersMap = new Map<string, Player & { [key: string]: any }>();
 
-    rows.forEach((row: any) => {
+    for (const row of rows) {
       if (!playersMap.has(row.player_key)) {
         playersMap.set(row.player_key, {
           name: row.name_full,
@@ -39,9 +45,10 @@ export const player = {
 
       const player = playersMap.get(row.player_key)!;
       if (row.stat_id !== null && row.stat_value !== undefined) {
-        player[row.stat_id] = row.stat_value;
+        const displayName = await statMapper.getDisplayName(row.stat_id);
+        player[displayName] = row.stat_value;
       }
-    });
+    }
 
     return { players: Array.from(playersMap.values()) };
   },

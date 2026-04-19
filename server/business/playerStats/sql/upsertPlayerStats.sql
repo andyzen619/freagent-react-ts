@@ -3,8 +3,7 @@ INSERT INTO player_stats (
     stat_category, 
     coverage_type, 
     stat_id,
-    season, 
-    date, 
+    timeframe_key, 
     stats
 ) 
 SELECT 
@@ -12,11 +11,10 @@ SELECT
     (data->>'stat_category')::text,
     (data->>'coverage_type')::text,
     (data->>'stat_id')::text,
-    (data->>'season')::text,
-    (data->>'date')::text,
+    (data->>'timeframe_key')::text,
     (data->'stats')::jsonb
 FROM jsonb_array_elements($1::jsonb) AS data
-ON CONFLICT (player_key, stat_category, coverage_type, season, date, stat_id)
+ON CONFLICT (player_key, stat_category, coverage_type, timeframe_key, stat_id)
 DO UPDATE SET 
     stats = EXCLUDED.stats,
     updated_at = CURRENT_TIMESTAMP;
