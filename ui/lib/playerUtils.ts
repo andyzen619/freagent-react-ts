@@ -94,31 +94,12 @@ export async function syncToServerDatabase({
   return { state: "Sync started." };
 }
 
-export async function fetchAllPlayers({
-  accessToken,
-}: {
-  accessToken: string;
-}): Promise<{ players?: Player[]; reloadauth?: boolean }> {
+export async function fetchAllPlayers(): Promise<{ players?: Player[] }> {
   const response = await fetch(`${ConfigApiSever.URL}/players`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   });
-
-  if (response.status === 401) {
-    return {
-      reloadauth: true,
-    };
-  }
 
   const { players } = await response.json();
 
-  const mapped = players.map(
-    ({ name, playerStatKey }: { name: string; playerStatKey: string }) => {
-      return { name, playerStatKey };
-    },
-  );
-
-  return { players: mapped };
+  return { players };
 }

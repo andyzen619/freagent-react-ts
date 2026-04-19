@@ -26,19 +26,11 @@ function RouteComponent() {
   }, [setAuthState]);
 
   useEffect(() => {
-    if (authState.accessToken.accessToken) {
-      const { accessToken } = authState.accessToken;
-
-      fetchAllPlayers({ accessToken }).then(({ players, reloadauth }) => {
-        if (reloadauth) {
-          setAuthState((prev) => ({ ...prev, reloadAuth: true }));
-        } else {
-          if (players && players.length) {
-            setPlayers(players);
-          }
-        }
-      });
-    }
+    fetchAllPlayers().then(({ players }) => {
+      if (players && players.length) {
+        setPlayers(players);
+      }
+    });
   }, [authState, setAuthState]);
 
   return (

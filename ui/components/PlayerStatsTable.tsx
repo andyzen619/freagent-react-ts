@@ -37,7 +37,7 @@ export function PlayerStatsTable({ players }: { players: Player[] }) {
           <tbody className="divide-y">
             {players.map((player) => (
               <tr
-                key={player.id}
+                key={player.playerStatKey}
                 className="hover:bg-muted/30 transition-colors group"
               >
                 <td className="px-4 py-3 sticky left-0 bg-background border-r shadow-[2px_0_8px_-4px_rgba(0,0,0,0.1)] group-hover:bg-muted/30 transition-colors">
@@ -46,10 +46,15 @@ export function PlayerStatsTable({ players }: { players: Player[] }) {
                       {player.name}
                     </span>
                     <span className="text-[10px] text-muted-foreground uppercase tracking-tight font-medium">
-                      {player.team} • {player.position}
+                      {player.team || "NBA"} • {player.position || "Player"}
                     </span>
                   </div>
                 </td>
+                {STAT_LABELS.map((label) => (
+                  <td key={label} className="px-2 py-3 text-center font-medium">
+                    {player[label] ?? "-"}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
