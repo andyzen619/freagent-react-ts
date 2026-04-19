@@ -17,48 +17,55 @@ export function PlayerStatsTable({ players }: { players: Player[] }) {
     <div className="space-y-4">
       <h2 className="text-xl font-bold px-1 text-primary">Player Trends</h2>
 
-      <div className="overflow-x-auto border rounded-xl shadow-sm bg-card">
-        <table className="w-full text-sm text-left border-collapse">
-          <thead className="text-xs uppercase bg-muted/50 border-b">
-            <tr>
-              <th className="px-4 py-3 font-bold sticky left-0 bg-muted/50 z-10 min-w-[140px] shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
-                Player Info
-              </th>
-              {STAT_LABELS.map((label) => (
-                <th
-                  key={label}
-                  className="px-2 py-3 font-bold text-center min-w-[70px]"
-                >
-                  {label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {players.map((player) => (
-              <tr
-                key={player.playerStatKey}
-                className="hover:bg-muted/30 transition-colors group"
-              >
-                <td className="px-4 py-3 sticky left-0 bg-background border-r shadow-[2px_0_8px_-4px_rgba(0,0,0,0.1)] group-hover:bg-muted/30 transition-colors">
-                  <div className="flex flex-col min-w-[100px]">
-                    <span className="font-bold text-sm leading-tight">
-                      {player.name}
+      <div className="space-y-3">
+        {/* Header - Hidden on Mobile */}
+        <div className="hidden md:grid md:grid-cols-[1fr_repeat(9,80px)] items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg text-xs font-bold uppercase tracking-wider text-muted-foreground border">
+          <div className="text-left">Player</div>
+          {STAT_LABELS.map((label) => (
+            <div key={label} className="text-center">
+              {label}
+            </div>
+          ))}
+        </div>
+
+        {/* Player Rows/Cards */}
+        <div className="space-y-3 md:space-y-1">
+          {players.map((player) => (
+            <div
+              key={player.playerStatKey}
+              className="bg-card border rounded-xl p-4 md:p-0 md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:bg-transparent md:grid md:grid-cols-[1fr_repeat(9,80px)] md:items-center md:gap-2 md:px-4 md:py-3 hover:bg-muted/30 transition-colors group"
+            >
+              {/* Player Name */}
+              <div className="mb-3 md:mb-0 border-b pb-2 md:border-0 md:pb-0">
+                <span className="text-lg font-bold md:text-sm md:font-medium text-foreground">
+                  {player.name}
+                </span>
+                {player.position && (
+                  <span className="ml-2 text-xs text-muted-foreground md:hidden">
+                    {player.position}
+                  </span>
+                )}
+              </div>
+
+              {/* Stats Grid - Mobile (3 columns) / Desktop (1 column each) */}
+              <div className="grid grid-cols-3 gap-y-3 gap-x-2 md:contents">
+                {STAT_LABELS.map((label) => (
+                  <div
+                    key={label}
+                    className="flex flex-col items-center md:items-center justify-center"
+                  >
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase md:hidden mb-0.5">
+                      {label}
                     </span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-tight font-medium">
-                      {player.team || "NBA"} • {player.position || "Player"}
+                    <span className="text-sm font-semibold md:font-medium">
+                      {player[label] ?? "-"}
                     </span>
                   </div>
-                </td>
-                {STAT_LABELS.map((label) => (
-                  <td key={label} className="px-2 py-3 text-center font-medium">
-                    {player[label] ?? "-"}
-                  </td>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
