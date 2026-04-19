@@ -12,10 +12,18 @@ const STAT_LABELS = [
   "PTS",
 ];
 
-export function PlayerStatsTable({ players }: { players: Player[] }) {
+export function PlayerStatsTable({
+  players,
+  statCoverageType = "season",
+}: {
+  players: Player[];
+  statCoverageType: string;
+}) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold px-1 text-primary">Player Trends</h2>
+      <h2 className="text-xl font-bold px-1 text-primary">
+        Player Trends - {statCoverageType}
+      </h2>
 
       <div className="space-y-3">
         {/* Header - Hidden on Mobile */}
