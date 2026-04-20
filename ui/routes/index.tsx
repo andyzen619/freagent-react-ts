@@ -89,7 +89,7 @@ function RouteComponent() {
         )}
       </div>
 
-      <PlayerStatsTable players={players} />
+      <PlayerStatsTable players={players} statCoverageType="Season" />
     </div>
   );
 }
