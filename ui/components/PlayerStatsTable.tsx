@@ -33,51 +33,39 @@ export function PlayerStatsTable({
         Player Trends - {statCoverageType}
       </h2>
 
-      <div className="space-y-3 w-full">
-        {/* Header - Hidden on Mobile */}
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg text-xs font-bold uppercase tracking-wider text-muted-foreground border">
-          <div className="flex-1 min-w-[150px]">Player</div>
+      <div className="space-y-3 w-full overflow-x-auto">
+        {/* Header - Always visible for alignment */}
+        <div className="flex items-center gap-1 px-4 py-2 bg-muted/50 rounded-lg text-[10px] font-bold uppercase tracking-wider text-muted-foreground border min-w-max">
           {STAT_LABELS.map((label) => (
-            <div key={label} className="w-16 text-center">
+            <div key={label} className="w-10 text-center">
               {label}
             </div>
           ))}
         </div>
 
         {/* Player Rows/Cards */}
-        <div className="flex flex-col gap-3 md:gap-0">
+        <div className="flex flex-col border rounded-xl divide-y overflow-hidden">
           {players.map((player) => (
-            <div
-              key={player.playerStatKey}
-              className="bg-card border rounded-xl p-4 md:p-0 md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:bg-transparent flex flex-col md:flex-row md:items-center md:gap-2 md:px-4 md:py-3 hover:bg-muted/30 transition-colors w-full"
-            >
-              {/* Player Name Section */}
-              <div className="mb-3 md:mb-0 border-b pb-2 md:border-0 md:pb-0 flex-1 md:min-w-[150px]">
-                <div className="text-lg font-bold md:text-sm md:font-semibold text-foreground truncate">
-                  {player.name}
+            <div key={player.playerStatKey} className="flex flex-col bg-card hover:bg-muted/30 transition-colors">
+              {/* Stats Row */}
+              <div className="flex items-center gap-1 px-4 pt-1.5 min-w-max">
+                <div className="flex items-center gap-1">
+                  {STAT_LABELS.map((label) => (
+                    <div
+                      key={label}
+                      className="flex items-center justify-center w-10"
+                    >
+                      <span className="text-[11px] font-medium text-foreground">
+                        {player[label] ?? "-"}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                {player.position && (
-                  <div className="text-xs text-muted-foreground md:hidden">
-                    {player.position}
-                  </div>
-                )}
               </div>
 
-              {/* Stats Section */}
-              <div className="grid grid-cols-3 gap-y-4 gap-x-2 md:flex md:items-center md:gap-2">
-                {STAT_LABELS.map((label) => (
-                  <div
-                    key={label}
-                    className="flex flex-col items-center justify-center md:w-16"
-                  >
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase md:hidden mb-0.5">
-                      {label}
-                    </span>
-                    <span className="text-sm font-semibold md:font-medium text-foreground">
-                      {player[label] ?? "-"}
-                    </span>
-                  </div>
-                ))}
+              {/* Player Name Row - Below */}
+              <div className="px-4 pb-1.5 text-[10px] font-bold text-primary/80 uppercase tracking-tight">
+                {player.name}
               </div>
             </div>
           ))}
