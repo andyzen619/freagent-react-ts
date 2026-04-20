@@ -112,13 +112,35 @@ export function PlayerStatsTable({
       ratio = 1 - ratio;
     }
 
+    // Increase contrast by pushing values towards the extremes
+    // We'll use a power function to expand the gap between elite and average
+    const adjustedRatio = ratio > 0.5 
+      ? Math.pow(ratio, 2) 
+      : 1 - Math.pow(1 - ratio, 2);
+
     // Interpolate between Blue (0, 0, 255) and Red (255, 0, 0)
-    // ratio 0 = Blue, ratio 1 = Red
-    const r = Math.round(255 * ratio);
-    const b = Math.round(255 * (1 - ratio));
-    const g = 0; // Keeping it simple Red-Blue scale
+    const r = Math.round(255 * adjustedRatio);
+    const b = Math.round(255 * (1 - adjustedRatio));
+    const g = Math.round(50 * (1 - Math.abs(adjustedRatio - 0.5) * 2)); // Subtle green in middle to soften transition
     
-    return `rgba(${r}, ${g}, ${b}, 0.2)`;
+    // Dynamic opacity: higher contrast for extremes
+    const opacity = 0.1 + (Math.abs(adjustedRatio - 0.5) * 0.8);
+    
+    return `rgba(${r}, ${g}, ${b}, ${opacity.toFixed(2)})`;
+  };
+
+  const getTextColor = (backgroundColor: string) => {
+    if (backgroundColor === "transparent") return "inherit";
+    const rgba = backgroundColor.match(/\d+(\.\d+)?/g);
+    if (!rgba || rgba.length < 4) return "inherit";
+    
+    const [r, g, b, a] = rgba.map(Number);
+    // If opacity is low, use standard foreground
+    if (a < 0.4) return "inherit";
+    
+    // Calculate brightness
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128 ? "#000000" : "#ffffff";
   };
 
   const handleSort = (label: string) => {
@@ -265,15 +287,19 @@ export function PlayerStatsTable({
                 <div className="flex items-center gap-1">
                   {displayLabels.map((label) => {
                     const val = getStatValue(player, label);
+                    const heatColor = getHeatColor(label, val);
                     return (
                       <div
                         key={label}
                         className={`flex items-center justify-center w-10 h-6 rounded-sm transition-colors ${
                           primarySort.key === label ? "ring-1 ring-primary/30 font-bold" : ""
                         }`}
-                        style={{ backgroundColor: getHeatColor(label, val) }}
+                        style={{ 
+                          backgroundColor: heatColor,
+                          color: getTextColor(heatColor)
+                        }}
                       >
-                        <span className="text-[11px] font-medium text-foreground">
+                        <span className="text-[11px] font-medium">
                           {val}
                         </span>
                       </div>
