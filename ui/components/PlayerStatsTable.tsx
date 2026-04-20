@@ -58,6 +58,54 @@ export function PlayerStatsTable({
     return "-";
   };
 
+  const getNumericVal = (val: any) => {
+    if (val === "-") return null;
+    if (typeof val === "string" && val.endsWith("%")) {
+      return parseFloat(val) || 0;
+    }
+    return parseFloat(val as string) || 0;
+  };
+
+  const statsMeta = useMemo(() => {
+    const meta: Record<string, { min: number; max: number }> = {};
+    STAT_LABELS.forEach((label) => {
+      const values = players
+        .map((p) => getNumericVal(getStatValue(p, label)))
+        .filter((v): v is number => v !== null);
+      if (values.length > 0) {
+        meta[label] = {
+          min: Math.min(...values),
+          max: Math.max(...values),
+        };
+      }
+    });
+    return meta;
+  }, [players]);
+
+  const getHeatColor = (label: string, value: any) => {
+    const num = getNumericVal(value);
+    if (num === null || !statsMeta[label]) return "transparent";
+
+    const { min, max } = statsMeta[label];
+    if (max === min) return "rgba(128, 128, 128, 0.1)";
+
+    // Normalize value between 0 and 1
+    let ratio = (num - min) / (max - min);
+    
+    // Invert for Turnovers - lower is better
+    if (label === "TO") {
+      ratio = 1 - ratio;
+    }
+
+    // Interpolate between Blue (0, 0, 255) and Red (255, 0, 0)
+    // ratio 0 = Blue, ratio 1 = Red
+    const r = Math.round(255 * ratio);
+    const b = Math.round(255 * (1 - ratio));
+    const g = 0; // Keeping it simple Red-Blue scale
+    
+    return `rgba(${r}, ${g}, ${b}, 0.2)`;
+  };
+
   const handleSort = (label: string) => {
     if (primarySort.key === label) {
       if (primarySort.direction === "desc") {
@@ -200,18 +248,22 @@ export function PlayerStatsTable({
               {/* Stats Row */}
               <div className="flex items-center gap-1 px-4 pt-1.5 min-w-max">
                 <div className="flex items-center gap-1">
-                  {STAT_LABELS.map((label) => (
-                    <div
-                      key={label}
-                      className={`flex items-center justify-center w-10 ${
-                        primarySort.key === label ? "bg-primary/5 font-bold" : ""
-                      }`}
-                    >
-                      <span className="text-[11px] font-medium text-foreground">
-                        {getStatValue(player, label)}
-                      </span>
-                    </div>
-                  ))}
+                  {STAT_LABELS.map((label) => {
+                    const val = getStatValue(player, label);
+                    return (
+                      <div
+                        key={label}
+                        className={`flex items-center justify-center w-10 h-6 rounded-sm transition-colors ${
+                          primarySort.key === label ? "ring-1 ring-primary/30 font-bold" : ""
+                        }`}
+                        style={{ backgroundColor: getHeatColor(label, val) }}
+                      >
+                        <span className="text-[11px] font-medium text-foreground">
+                          {val}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
