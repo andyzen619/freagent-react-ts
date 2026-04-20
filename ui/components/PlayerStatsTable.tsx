@@ -45,6 +45,21 @@ export function PlayerStatsTable({
   });
   const [isCombinedMode, setIsCombinedMode] = useState(false);
 
+  const displayLabels = useMemo(() => {
+    const labels = [...STAT_LABELS];
+    const result: string[] = [];
+
+    if (primarySort.key) {
+      result.push(primarySort.key);
+    }
+    if (secondarySort.key && secondarySort.key !== primarySort.key) {
+      result.push(secondarySort.key);
+    }
+
+    const remaining = labels.filter((l) => !result.includes(l));
+    return [...result, ...remaining];
+  }, [primarySort.key, secondarySort.key]);
+
   const getStatValue = (player: Player, label: string) => {
     // Try the direct label first
     if (player[label] !== undefined) return player[label];
@@ -225,7 +240,7 @@ export function PlayerStatsTable({
       <div className="space-y-3 w-full overflow-x-auto">
         {/* Header - Always visible for alignment */}
         <div className="flex items-center gap-1 px-4 py-2 bg-muted/50 rounded-lg text-[10px] font-bold uppercase tracking-wider text-muted-foreground border min-w-max">
-          {STAT_LABELS.map((label) => (
+          {displayLabels.map((label) => (
             <button
               key={label}
               onClick={() => handleSort(label)}
@@ -248,7 +263,7 @@ export function PlayerStatsTable({
               {/* Stats Row */}
               <div className="flex items-center gap-1 px-4 pt-1.5 min-w-max">
                 <div className="flex items-center gap-1">
-                  {STAT_LABELS.map((label) => {
+                  {displayLabels.map((label) => {
                     const val = getStatValue(player, label);
                     return (
                       <div
