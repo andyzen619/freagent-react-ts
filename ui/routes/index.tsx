@@ -20,18 +20,19 @@ function RouteComponent() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncSuccess, setSyncSuccess] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
+  const [coverageType, setCoverageType] = useState<string>("season");
 
   useEffect(() => {
     checkExistingToken({ setAuthState });
   }, [setAuthState]);
 
   useEffect(() => {
-    fetchAllPlayers().then(({ players }) => {
+    fetchAllPlayers(coverageType).then(({ players }) => {
       if (players && players.length) {
         setPlayers(players);
       }
     });
-  }, [authState, setAuthState]);
+  }, [authState, setAuthState, coverageType]);
 
   return (
     <div className="flex flex-col gap-8 p-4">
@@ -89,7 +90,11 @@ function RouteComponent() {
         )}
       </div>
 
-      <PlayerStatsTable players={players} statCoverageType="Season" />
+      <PlayerStatsTable
+        players={players}
+        statCoverageType={coverageType}
+        onCoverageChange={setCoverageType as any}
+      />
     </div>
   );
 }

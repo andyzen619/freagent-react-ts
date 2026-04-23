@@ -38,9 +38,11 @@ export const YahooApi = {
   getStats: async ({
     token,
     start = 0,
+    statsType = "season",
   }: {
     token: string;
     start?: number;
+    statsType?: string;
   }): Promise<{
     players: {
       player_key?: string | undefined;
@@ -50,7 +52,7 @@ export const YahooApi = {
     count: number;
   }> => {
     const response = await fetch(
-      `https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players;out=stats;start=${start}?format=json`,
+      `https://fantasysports.yahooapis.com/fantasy/v2/league/nba.l.40314/players;out=stats;type=${statsType};start=${start}?format=json`,
       {
         method: "GET",
         headers: {

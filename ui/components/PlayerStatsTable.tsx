@@ -3,6 +3,7 @@ import { useTableStats } from "../hooks/useTableStats";
 import { getStatValue } from "../lib/stats-utils";
 import { HeatMapCell } from "./table/HeatMapCell";
 import { StatHeader } from "./table/StatHeader";
+import { CoverageSelector, type CoverageType } from "./table/CoverageSelector";
 
 const DEFAULT_STAT_LABELS = [
   "FG%",
@@ -19,9 +20,11 @@ const DEFAULT_STAT_LABELS = [
 export function PlayerStatsTable({
   players,
   statCoverageType = "season",
+  onCoverageChange,
 }: {
   players: Player[];
   statCoverageType: string;
+  onCoverageChange?: (coverage: CoverageType) => void;
 }) {
   const {
     primarySort,
@@ -36,31 +39,40 @@ export function PlayerStatsTable({
 
   if (!players || players.length === 0) {
     return (
-      <div className="p-8 text-center border rounded-xl bg-card text-muted-foreground mx-1">
-        No player stats available.
+      <div className="p-8 text-center border rounded-xl bg-card text-muted-foreground mx-1 flex flex-col items-center gap-4">
+        <p>No player stats available for this coverage type.</p>
+        <p className="text-xs">Try running a "Synchronize" to fetch latest data for all coverage types.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4 w-full px-1">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <h2 className="text-xl font-bold text-primary">
-            Player Trends - {statCoverageType}
+            Player Trends
           </h2>
-          {secondarySort.key && (
-            <button
-              onClick={() => setIsCombinedMode(!isCombinedMode)}
-              className={`text-[10px] px-2 py-1 rounded border transition-colors ${
-                isCombinedMode 
-                  ? "bg-primary text-primary-foreground border-primary" 
-                  : "bg-background text-muted-foreground border-muted hover:border-primary"
-              }`}
-            >
-              {isCombinedMode ? "Combined Mode: ON" : "Combined Mode: OFF"}
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {onCoverageChange && (
+              <CoverageSelector 
+                currentCoverage={statCoverageType} 
+                onCoverageChange={onCoverageChange} 
+              />
+            )}
+            {secondarySort.key && (
+              <button
+                onClick={() => setIsCombinedMode(!isCombinedMode)}
+                className={`text-[10px] px-2 py-1 rounded border transition-colors h-7 ${
+                  isCombinedMode 
+                    ? "bg-primary text-primary-foreground border-primary" 
+                    : "bg-background text-muted-foreground border-muted hover:border-primary"
+                }`}
+              >
+                {isCombinedMode ? "Combined Mode: ON" : "Combined Mode: OFF"}
+              </button>
+            )}
+          </div>
         </div>
         {(primarySort.key || secondarySort.key) && (
           <div className="text-[10px] text-muted-foreground flex gap-2">

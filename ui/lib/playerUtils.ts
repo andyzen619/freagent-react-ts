@@ -94,8 +94,13 @@ export async function syncToServerDatabase({
   return { state: "Sync started." };
 }
 
-export async function fetchAllPlayers(): Promise<{ players?: Player[] }> {
-  const response = await fetch(`${ConfigApiSever.URL}/players`, {
+export async function fetchAllPlayers(coverageType?: string): Promise<{ players?: Player[] }> {
+  const url = new URL(`${ConfigApiSever.URL}/players`);
+  if (coverageType) {
+    url.searchParams.append("coverage_type", coverageType);
+  }
+
+  const response = await fetch(url.toString(), {
     method: "GET",
   });
 

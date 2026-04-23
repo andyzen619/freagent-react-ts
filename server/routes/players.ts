@@ -34,6 +34,7 @@ router.get("/", async (req, res) => {
 router.post("/sync", async (req, res) => {
   try {
     const { token } = AuthorizationToken.fromRequestHeaders(req);
+    const statsTypes = ["season", "average_season", "lastweek"]; // Added lastweek and average_season
 
     let allPlayers: any[] = [];
     let allPlayersWithStats: any[] = [];
@@ -60,26 +61,30 @@ router.post("/sync", async (req, res) => {
       currentIndex += 25;
     }
 
-    // Reset for stats fetching
-    currentIndex = 0;
-    for (let i = 0; i < 6; i++) {
-      console.log(`Fetching player stats batch starting at ${currentIndex}...`);
-      const { players: statsBatch } = await YahooApi.getStats({
-        token,
-        start: currentIndex,
-      });
+    // Fetch stats for each type
+    for (const statsType of statsTypes) {
+      console.log(`Starting sync for stats type: ${statsType}...`);
+      currentIndex = 0;
+      for (let i = 0; i < 6; i++) {
+        console.log(`Fetching player stats batch for ${statsType} starting at ${currentIndex}...`);
+        const { players: statsBatch } = await YahooApi.getStats({
+          token,
+          start: currentIndex,
+          statsType,
+        });
 
-      allPlayersWithStats.push(...statsBatch);
+        allPlayersWithStats.push(...statsBatch);
 
-      console.log(
-        `Fetched stats for ${statsBatch.length} players. Total accumulated: ${allPlayersWithStats.length}/${totalCount}`,
-      );
+        console.log(
+          `Fetched ${statsType} stats for ${statsBatch.length} players. Total accumulated: ${allPlayersWithStats.length}`,
+        );
 
-      currentIndex += 25;
+        currentIndex += 25;
+      }
     }
 
     console.log(
-      `Sync complete. Total Players: ${allPlayers.length}, Total Stats: ${allPlayersWithStats.length}`,
+      `Sync complete. Total Players: ${allPlayers.length}, Total Stats Entries: ${allPlayersWithStats.length}`,
     );
 
     await dataSynchronization.start({
