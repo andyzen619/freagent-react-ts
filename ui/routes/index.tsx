@@ -30,9 +30,11 @@ function RouteComponent() {
     fetchAllPlayers(coverageType).then(({ players }) => {
       if (players && players.length) {
         setPlayers(players);
+      } else {
+        setPlayers([]);
       }
     });
-  }, [authState, setAuthState, coverageType]);
+  }, [authState, setAuthState, coverageType, setCoverageType]);
 
   return (
     <div className="flex flex-col gap-8 p-4">
@@ -93,7 +95,7 @@ function RouteComponent() {
       <PlayerStatsTable
         players={players}
         statCoverageType={coverageType}
-        onCoverageChange={setCoverageType as any}
+        onCoverageChange={setCoverageType}
       />
     </div>
   );
