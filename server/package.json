@@ -25,6 +25,8 @@
     "start": "node dist/server.js",
     "dev": "node --watch --watch-path=. --loader ts-node/esm server.ts",
     "migrate": "node --loader ts-node/esm database/migrate.ts",
+    "db:truncate-stats": "PGPASSWORD=durant psql -h localhost -p 5433 -U freagent -d freagent_db -c 'TRUNCATE TABLE player_stats;'",
+    "db:reset-stats": "PGPASSWORD=durant psql -h localhost -p 5433 -U freagent -d freagent_db -c 'DROP TABLE IF EXISTS player_stats; DELETE FROM migrations WHERE name IN (\"005_create_stats_table.sql\", \"006_add_unique_constraint_stats.sql\", \"007_add_stat_id_to_player_stats.sql\", \"008_consolidate_timeframe.sql\");' && npm run migrate",
     "test": "vitest"
   }
 }

@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
 router.post("/sync", async (req, res) => {
   try {
     const { token } = AuthorizationToken.fromRequestHeaders(req);
-    const statsTypes = ["season", "average_season", "lastweek"]; // Added lastweek and average_season
+    const statsTypes = ["season", "average_season", "last7"]; // Changed lastweek to last7
 
     let allPlayers: any[] = [];
     let allPlayersWithStats: any[] = [];
@@ -66,14 +66,21 @@ router.post("/sync", async (req, res) => {
       console.log(`Starting sync for stats type: ${statsType}...`);
       currentIndex = 0;
       for (let i = 0; i < 6; i++) {
-        console.log(`Fetching player stats batch for ${statsType} starting at ${currentIndex}...`);
+        console.log(
+          `Fetching player stats batch for ${statsType} starting at ${currentIndex}...`,
+        );
         const { players: statsBatch } = await YahooApi.getStats({
           token,
           start: currentIndex,
           statsType,
         });
 
-        allPlayersWithStats.push(...statsBatch);
+        await dataSynchronization.start({
+          pgClient,
+          players: allPlayers,
+          playersWithStats: statsBatch,
+          coverage_type: statsType,
+        });
 
         console.log(
           `Fetched ${statsType} stats for ${statsBatch.length} players. Total accumulated: ${allPlayersWithStats.length}`,
@@ -86,12 +93,6 @@ router.post("/sync", async (req, res) => {
     console.log(
       `Sync complete. Total Players: ${allPlayers.length}, Total Stats Entries: ${allPlayersWithStats.length}`,
     );
-
-    await dataSynchronization.start({
-      pgClient,
-      players: allPlayers,
-      playersWithStats: allPlayersWithStats,
-    });
 
     return res.status(200).send({
       message: "Sync logs generated in console",

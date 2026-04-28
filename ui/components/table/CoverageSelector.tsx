@@ -1,6 +1,6 @@
 import React from "react";
 
-export type CoverageType = "season" | "average_season" | "lastweek";
+export type CoverageType = "season" | "average_season" | "last7";
 
 interface CoverageSelectorProps {
   currentCoverage: string;
@@ -14,7 +14,7 @@ export const CoverageSelector: React.FC<CoverageSelectorProps> = ({
   const options: { label: string; value: CoverageType }[] = [
     { label: "Season Totals", value: "season" },
     { label: "Season Averages", value: "average_season" },
-    { label: "Last 7 Days", value: "lastweek" },
+    { label: "Last 7 Days", value: "last7" },
   ];
 
   return (

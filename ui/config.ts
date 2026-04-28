@@ -1,5 +1,5 @@
 export const ConfigUI = {
-  URL_PREFIX: "d4a5-70-53-83-74",
+  URL_PREFIX: "2e7f-70-53-83-74",
 };
 
 export const ConfigApiSever = {

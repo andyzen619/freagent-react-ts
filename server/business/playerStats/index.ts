@@ -29,9 +29,11 @@ export const playerStats = {
   upsert: async ({
     pgClient,
     players,
+    coverage_type,
   }: {
     pgClient: Client;
     players: PlayerWithStats[];
+    coverage_type: string;
   }) => {
     const sql = await databseUtils.loadSqlFile(
       join(__dirname, "./sql/upsertPlayerStats.sql"),
@@ -44,18 +46,20 @@ export const playerStats = {
         stats: PlayerStats | undefined,
         category: "standard" | "advanced",
       ) => {
-        if (!stats) return;
-        const coverage = stats[0];
+        if (!stats) {
+          return;
+        }
+
         const timeframe_key =
-          coverage?.coverage_type === "date"
-            ? coverage?.date
-            : coverage?.season || "current";
+          coverage_type === "date"
+            ? stats[0]?.date
+            : stats[0]?.season || "current";
 
         stats.stats.forEach(({ stat }) => {
           statsToInsert.push({
             player_key: player.player_key,
             stat_category: category,
-            coverage_type: coverage?.coverage_type,
+            coverage_type,
             timeframe_key,
             stat_id: stat.stat_id,
             stats: stat,
