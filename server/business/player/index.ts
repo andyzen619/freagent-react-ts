@@ -5,8 +5,6 @@ import type { PlayerClass } from "../../lib/yahoo/types.js";
 import { db } from "../../database/database.js";
 import { databseUtils } from "../../database/utils.js";
 import { statMapper } from "../../lib/yahoo/statMapper.js";
-import type { PlayerModel } from "../../database/models/PlayerModel.js";
-import type { PlayerStatModel } from "../../database/models/PlayerStatModel.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
