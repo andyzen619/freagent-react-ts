@@ -23,6 +23,8 @@ export function OAuthAuthenticationCard({
   success,
   onRetry,
 }: OAuthAuthenticationCardProps) {
+  const token = typeof window !== "undefined" ? sessionStorage.getItem("access_token") : null;
+
   return (
     <Card className="w-full max-w-md text-center">
       <CardHeader>
@@ -54,6 +56,24 @@ export function OAuthAuthenticationCard({
               <p className="text-sm text-muted-foreground">
                 You can now close this window or return to the dashboard.
               </p>
+              {token ? (
+                <div className="flex items-center justify-center gap-2 pt-2">
+                  <div className="truncate text-xs">{token}</div>
+                  <Button
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(token);
+                      } catch (e) {
+                        // eslint-disable-next-line no-alert
+                        alert("Could not copy token to clipboard. Open DevTools to view it.");
+                      }
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </div>
+              ) : null}
             </div>
           </>
         ) : loading ? (

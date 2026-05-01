@@ -21,6 +21,7 @@ function RouteComponent() {
   const [syncSuccess, setSyncSuccess] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
   const [coverageType, setCoverageType] = useState<string>("season");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     checkExistingToken({ setAuthState });
@@ -38,6 +39,29 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-8 p-4">
+      {/* Access token display for debugging / curl tests */}
+      {authState.accessToken?.accessToken ? (
+        <div className="flex items-center gap-4">
+          <div className="truncate text-sm">Token: {authState.accessToken.accessToken}</div>
+          <Button
+            onClick={async () => {
+              const token = sessionStorage.getItem("access_token") || "";
+              try {
+                await navigator.clipboard.writeText(token);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              } catch (e) {
+                // Fallback: select and alert
+                // eslint-disable-next-line no-alert
+                alert("Could not copy to clipboard. Open DevTools Application tab to view token.");
+              }
+            }}
+            size="sm"
+          >
+            {copied ? "Copied" : "Copy Access Token"}
+          </Button>
+        </div>
+      ) : null}
       {/* Action Grid */}
       <div className="grid grid-rows-[repeat(2,80px)] grid-flow-col gap-4 overflow-x-auto pb-4 auto-cols-[200px]">
         {authState.reloadAuth ? (
